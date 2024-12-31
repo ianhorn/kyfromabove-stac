@@ -30,7 +30,7 @@ def assign_start_datetime(item):
                 elif  "2012" in item:
                     return datetime(2012, 3, 12, 16, 18, 0)
                 elif "2013" in item:
-                    return datetime(2012, 11, 06, 0, 0, 0)
+                    return datetime(2012, 11, 6, 0, 0, 0)
                 elif "2014" in item:
                     return datetime(2014, 11, 19, 0, 0, 0)
                 elif "2015" in item:
@@ -86,7 +86,7 @@ def assign_start_datetime(item):
                 elif "2023_Season2" in item:
                     return datetime(2023, 11, 15, 0, 0, 0)
                 elif "2024" in item:
-                    return datetime(2024, 02, 01, 0, 0, 0)
+                    return datetime(2024, 2, 1, 0, 0, 0)
 
     except Exception as e:
         print(e)    
@@ -200,13 +200,6 @@ def assign_collection(href):
 
 def get_item_properties(href) -> dict:
     properties = {"license": "CC-BY-4.0"}
-    properties = {
-        "assets": {
-            "href": href,
-            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-            "roles": "data"
-        }
-    }
 
    # add band properties for orthos
     if "orthos" in href:
@@ -248,5 +241,4 @@ def get_stac_extensions(href):
     if href.endswith(".tif"):
         extensions.append("projection")  # Projection extension for geospatial data
         extensions.append("raster")      # Raster extension for raster data
-       
     return extensions

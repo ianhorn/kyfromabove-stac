@@ -30,7 +30,7 @@ def assign_start_datetime(item):
                 elif  "2012" in item:
                     return datetime(2012, 3, 12, 16, 18, 0)
                 elif "2013" in item:
-                    return datetime(2012, 11, 06, 0, 0, 0)
+                    return datetime(2012, 11, 6, 0, 0, 0)
                 elif "2014" in item:
                     return datetime(2014, 11, 19, 0, 0, 0)
                 elif "2015" in item:
@@ -86,7 +86,7 @@ def assign_start_datetime(item):
                 elif "2023_Season2" in item:
                     return datetime(2023, 11, 15, 0, 0, 0)
                 elif "2024" in item:
-                    return datetime(2024, 02, 01, 0, 0, 0)
+                    return datetime(2024, 2, 1, 0, 0, 0)
 
     except Exception as e:
         print(e)    
@@ -230,6 +230,7 @@ def get_bbox_and_footprint(raster):
     """
 
     with rasterio.open(raster) as r:
+        crs = r.crs
         bounds = r.bounds
         bbox = [bounds.left, bounds.bottom, bounds.right, bounds.top]
         footprint = Polygon([
@@ -239,7 +240,7 @@ def get_bbox_and_footprint(raster):
             [bounds.right, bounds.bottom]
         ])
         
-        return (bbox, mapping(footprint))
+        return (bbox, mapping(footprint), crs)
     
 
 def get_stac_extensions(href):
@@ -247,5 +248,4 @@ def get_stac_extensions(href):
     if href.endswith(".tif"):
         extensions.append("projection")  # Projection extension for geospatial data
         extensions.append("raster")      # Raster extension for raster data
-       
     return extensions
