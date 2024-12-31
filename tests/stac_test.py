@@ -32,10 +32,11 @@ def create_stac_item(href):
         bbox=bbox,
         datetime=None,
         properties=properties,
-        collection=collection,
         start_datetime=start_datetime,
         end_datetime=end_datetime
     )
+    if collection:
+        item.collection = collection
 
     item.properties["extensions"] = extensions
         # Apply projection and raster extensions
