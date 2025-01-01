@@ -175,3 +175,6 @@ cython_debug/
 *.csv
 csv
 items
+
+post.txt
+phase3.py

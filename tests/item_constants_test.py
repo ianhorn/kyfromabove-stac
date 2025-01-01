@@ -202,43 +202,13 @@ def get_item_properties(href) -> dict:
     properties = {"license": "CC-BY-4.0"}
 
    # add band properties for orthos
-    if "orthos" in href:
-        eo_bands = {
-            "band 1": "red",
-            "band 2": "green",
-            "band 3": "red",
-            "band 4": "nir"
-        }
-    properties["eo:bands"] = eo_bands
+    # if "orthos" in href:
+    #     eo_bands = {
+    #         "band 1": "red",
+    #         "band 2": "green",
+    #         "band 3": "red",
+    #         "band 4": "nir"
+    #     }
+    # properties["eo:bands"] = eo_bands
     
     return properties
-
-
-def get_bbox_and_footprint(raster):
-    """
-    Example lifted straight from the tutorial on https://stacindex.org/en/tutorials/2-create-stac-catalog-python/index.html
-
-    Parameter: raster (item or href)
-    
-    """
-
-    with rasterio.open(raster) as r:
-        crs = r.crs
-        bounds = r.bounds
-        bbox = [bounds.left, bounds.bottom, bounds.right, bounds.top]
-        footprint = Polygon([
-            [bounds.left, bounds.bottom],
-            [bounds.left, bounds.top],
-            [bounds.right, bounds.top],
-            [bounds.right, bounds.bottom]
-        ])
-        
-        return (bbox, mapping(footprint), crs)
-    
-
-def get_stac_extensions(href):
-    extensions = []
-    if href.endswith(".tif"):
-        extensions.append("projection")  # Projection extension for geospatial data
-        extensions.append("raster")      # Raster extension for raster data
-    return extensions
