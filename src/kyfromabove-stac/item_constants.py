@@ -38,7 +38,7 @@ def assign_start_datetime(item):
                 elif "2016" in item:
                     return datetime(2016, 2, 17, 0, 0, 0)
                 elif "2017" in item:
-                    return datetime(2017, 12, 15, 0, 0, 0)
+                    return datetime(2016, 12, 15, 0, 0, 0)
             elif "Phase2" in item:
                 if "2019" in item:
                     return datetime(2019, 2, 19, 0, 0, 0)
@@ -109,7 +109,7 @@ def assign_end_datetime(item):
                 if "2010" in item:
                     return datetime(2010, 6, 7, 0, 0, 0)
                 elif "2011" in item:
-                    return datetime(2010, 4, 10, 0, 0, 0)
+                    return datetime(2011, 4, 10, 0, 0, 0)
                 elif  "2012" in item:
                     return datetime(2013, 4, 8, 10, 11, 0)
                 elif "2013" in item:

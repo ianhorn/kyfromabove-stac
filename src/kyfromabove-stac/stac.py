@@ -79,13 +79,15 @@ def create_stac_item(href):
         # Define asset URL (assuming `href` as URL for the asset)
         asset_url = href
 
-        if "orthos" in asset_url:
-            eo_bands = {
-            "band 1": "red",
-            "band 2": "green",
-            "band 3": "red",
-            "band 4": "nir"
-        }
+        # if "orthos" in asset_url:
+        #     eo_bands = {
+        #     "band 1": "red",
+        #     "band 2": "green",
+        #     "band 3": "red",
+        #     "band 4": "nir"
+        # }
+        # else:
+        #     return None
 
         # Define asset dictionary
         asset = Asset(
@@ -93,7 +95,7 @@ def create_stac_item(href):
             media_type="image/tiff; application=geotiff; profile=cloud-optimized",
             roles=["data"],
             title="asset",
-            extra_fields={"eo:bands": eo_bands if eo_bands else []}
+            # extra_fields={"eo:bands": eo_bands if eo_bands else []}
         )
         
        
@@ -126,6 +128,6 @@ def main(input_file, out_dir):
         print(f"Saved {stac_json} to file.")
 
 if __name__ == "__main__":
-    input_file = "https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase2/KY_KYAPED_2019_6IN/N033E311_2019_6IN_cog.tif"
+    input_file = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase1/N026E311_2012_DEM_Phase1_cog.tif"
     out_dir = "./items"
     main(input_file, out_dir)
