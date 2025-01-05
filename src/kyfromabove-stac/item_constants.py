@@ -201,14 +201,14 @@ def assign_collection(href):
 def get_item_properties(href) -> dict:
     properties = {"license": "CC-BY-4.0"}
 
-   # add band properties for orthos
-    # if "orthos" in href:
-    #     eo_bands = {
-    #         "band 1": "red",
-    #         "band 2": "green",
-    #         "band 3": "red",
-    #         "band 4": "nir"
-    #     }
-    # properties["eo:bands"] = eo_bands
+    # add band properties for orthos
+    if "orthos" in href:
+        eo_bands = {
+            "band 1": "red",
+            "band 2": "green",
+            "band 3": "red",
+            "band 4": "nir"
+        }
+        properties["eo_bands"] = eo_bands
     
     return properties
