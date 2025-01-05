@@ -32,6 +32,6 @@ def process_row(row):
     print(f"STAC item created and saved for: {href}")
 
 # Using ThreadPoolExecutor to run tasks concurrently
-with ThreadPoolExecutor(max_workers=21) as executor:
+with ThreadPoolExecutor(max_workers=32) as executor:
     # Pass the rows of the dataframe to the executor
     executor.map(process_row, [row for _, row in data.iterrows()])
