@@ -1,5 +1,7 @@
 # import rio-stac because I like the final product
 from rio_stac import create_stac_item
+import json
+import os
 from datetime import timezone
 
 from item_constants import (assign_start_datetime,
@@ -19,7 +21,7 @@ def get_datetime(href):
     end_datetime = end_datetime.replace(tzinfo=timezone.utc)      # Set UTC timezone
 
     # Print for debugging
-    # print(f"\nStart datetime: {start_datetime}, End datetime: {end_datetime}\n")
+    print(f"\nStart datetime: {start_datetime}, End datetime: {end_datetime}\n")
 
     return start_datetime, end_datetime  # Return datetime objects directly
 
@@ -35,7 +37,7 @@ def create_item(href):
     if "cog" in href.lower():
         asset_media_type = "image/tiff; application=geotiff; cloud-optimized"
 
-    # print(f"Creating STAC item with ID: {id}, Collection: {collection}, Source: {href}\n")
+    print(f"Creating STAC item with ID: {id}, Collection: {collection}, Source: {href}\n")
 
     try:
         # Create the STAC item
@@ -57,7 +59,7 @@ def create_item(href):
             item.properties["start_datetime"] = start_datetime.strftime('%Y-%m-%dT%H:%M:%S') + "Z"  # With UTC offset
             item.properties["end_datetime"] = end_datetime.strftime('%Y-%m-%dT%H:%M:%S') + "Z"  # With UTC offset
 
-        print(f"STAC item {item.id} created successfully.")
+        print("STAC item created successfully.")
         return item
 
     except Exception as e:
@@ -75,6 +77,21 @@ def main(input_file, output_dir):
         return
     # else:
     #     print(json.dumps(item.to_dict(), indent=2))
+
+ 
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir) 
+        
+    file_path = os.path.basename(href).replace(".tif", ".json")
+
+    stac_json = os.path.join(output_dir, file_path)
+
+    # Write the STAC item to a JSON file
+    with open(stac_json, 'w') as f:
+        json.dump(item.to_dict(), f, indent=4)  # Use `to_dict()` method to serialize
+        print(f"Saved {stac_json} to file.\n")
+
 if __name__ == '__main__':
     input_file = 'https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2023_Season1_3IN/N036E330_2023_Season1_3IN_cog.tif'
-    main(input_file)
+    output_dir = "c:/users/ian.horn/downloads/temp/items"
+    main(input_file, output_dir)

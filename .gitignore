@@ -177,8 +177,8 @@ csv
 items
 
 post.txt
-phase3.py
-phase3*.py
+# phase3.py
+# phase3*.py
 ortho_p1*.py
 orthos
 ortho*.py

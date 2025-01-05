@@ -204,10 +204,10 @@ def get_item_properties(href) -> dict:
     # add band properties for orthos
     if "orthos" in href:
         eo_bands = {
-            "band 1": "red",
-            "band 2": "green",
-            "band 3": "red",
-            "band 4": "nir"
+            "band 1": "Red",
+            "band 2": "Green",
+            "band 3": "Blue",
+            "band 4": "Near-Infrared"
         }
         properties["eo_bands"] = eo_bands
     
