@@ -1,3 +1,6 @@
+"""
+Just some helpful lines for my use
+"""
 
     # id = os.path.basename(href)  # Use only the filename as the ID  
     # 
