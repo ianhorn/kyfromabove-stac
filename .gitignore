@@ -175,10 +175,12 @@ cython_debug/
 *.csv
 csv
 items
-
+post-items.txt
 post.txt
 # phase3.py
 # phase3*.py
 ortho_p1*.py
 orthos
 ortho*.py
+phase1*.py
+phase3_orthos.py
