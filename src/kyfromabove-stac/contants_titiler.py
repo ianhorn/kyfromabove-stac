@@ -37,7 +37,7 @@ def assign_datetime(item):
             elif "2024" in item:
                 return "2024-01-08/2024-02-05"
         elif Phase3 in item:
-            elif "2022" in item:
+            if "2022" in item:
                 return "2022-02-07/2022-04-14"
             elif "2023" in item:
                 return "2022-12-12/2023-03-05"
