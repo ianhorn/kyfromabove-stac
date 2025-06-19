@@ -4,7 +4,7 @@ Collections cover more years.  Assign extents by years may allow for
 more filtering by datetime.
 """
 
-def assign_datetime(item):
+def assign_datetime(href):
     try:
         if Phase1 in item:
             if "2010" in item:
