@@ -1,0 +1,20 @@
+FORFILES [/p Path] [/m SrchMask] [/s] [/c Command] [/d [+ | -] {date | dd}] 
+
+forfiles /p C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dems /m N*DEM_Phase1_cog.json /c "cmd \c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/dem-phase1/items -H "Content-Type: application/json" -d @file
+
+curl -X POST "http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/dem-phase1/items" \
+  -H "Content-Type: application/json" \
+  -d "@C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dems\N011E284_2011_DEM_Phase1_cog.json"
+
+forfiles /p "C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dems" /m N*DEM_Phase1_cog.json /c "cmd /c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/dem-phase1/items -H \"Content-Type: application/json\" -d @\"@path\""
+
+forfiles /p "C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dems" /m N*DEM_Phase2_cog.json /c "cmd /c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/dem-phase2/items -H \"Content-Type: application/json\" -d @\"@path\""
+
+forfiles /p "C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dems" /m N*DEM_Phase3_cog.json /c "cmd /c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/dem-phase3/items -H \"Content-Type: application/json\" -d @\"@path\""
+
+
+forfiles /p "C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\orthos\phase1" /m * /c "cmd /c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/orthos-phase1/items -H \"Content-Type: application/json\" -d @\"@path\""
+
+forfiles /p "C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\orthos\phase2" /m * /c "cmd /c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/orthos-phase2/items -H \"Content-Type: application/json\" -d @\"@path\""
+
+forfiles /p "C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\orthos\phase3" /m * /c "cmd /c curl -X POST http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com:8082/collections/orthos-phase3/items -H \"Content-Type: application/json\" -d @\"@path\""
