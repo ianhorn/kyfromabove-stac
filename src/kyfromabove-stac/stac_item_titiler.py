@@ -6,49 +6,48 @@ It will then use the titiler.extension to create a stac item
 
 Based on stac.py from which basically is rio-stac Extension.
 """
+import requests
+import json
+from constants_titiler import assign_datetime, assign_collection
 
+titiler_endpoint = "http://localhost:8000/cog/stac"
 
-from system import os
-import titiler 
-from titiler.extensions import stac
-from contants_titiler import assign_datetime, assign_collection
-# datetime = assign_datetime(href)
-# collection_id = assign_collection(href)
-asset_roles = "data"
+def get_item_attributes(url):
+    datetime_str = assign_datetime(url)
+    collection = assign_collection(url)
+    return datetime_str, collection
 
-# def create_stac_item(href, dateteim, collection_id, asset_roles):
-#     try:
-#         item = stac.item(
-#             url = href,
-#             datetime = assign_datetime(href),
-#             collection = assign_collection(href),
-#             asset_roles = "data",
-#             with_proj = True,
-#             with_raster = True,
-#             with_eo = False
-#         )
+def create_stac_item(url):
+    datetime_str, collection = get_item_attributes(url)
+    
+    params = {
+        "url": url,
+        "datetime": datetime_str,
+        "collection": collection,
+        "asset_roles": "data",
+        "with_eo": "false"
+    }
 
-#         return item
+    try:
+        response = requests.get(titiler_endpoint, params=params)
 
-#     except Exception as e:
-#         print(e)
+        if response.ok:
+            item = response.json()
+            print(json.dumps(item, indent=2))
+            return item
+        else:
+            print("Failed to process", url)
+            print("Status code:", response.status_code)
+            print("Response text:", response.text)
+            return None
 
+    except Exception as e:
+        print(f"Error occurred while processing {url}: {e}")
+        return None
 
+def main(url):
+    create_stac_item(url)
 
-def main(input_file, output_dir):
-    href = input_file
-
-    item = create_stac_item(href)  # Get the created item
-    output_dir = output_dir
-
-    if item is None:
-        print("Failed to create STAC item. Exiting.\n")
-        return
-    else:
-        print(json.dumps(item.to_dict(), indent=2))
-
-if __name__ == '__main__':
-    input_file = 'https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2023_Season1_3IN/N036E330_2023_Season1_3IN_cog.tif'
-    output_dir = r'C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\titiler-items'
-    main(input_file)
-
+if __name__ == "__main__":
+    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase1/KY_KYAPED_2014_6IN/N135E128_2014_6IN_cog.tif"
+    main(url)

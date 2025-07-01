@@ -6,7 +6,7 @@ titiler-items
 
 # C extensions
 *.so
-
+collections/thumbnails/*
 # Distribution / packaging
 .Python
 build/
