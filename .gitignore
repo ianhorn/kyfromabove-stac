@@ -51,6 +51,8 @@ coverage.xml
 .pytest_cache/
 cover/
 collection/thumbnails/*
+collection/thumbnails/dem-phase1
+
 # Translations
 *.mo
 *.pot
