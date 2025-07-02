@@ -2,10 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+titiler-items
 
 # C extensions
 *.so
-
+collections/thumbnails/*
 # Distribution / packaging
 .Python
 build/

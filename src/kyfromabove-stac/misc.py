@@ -20,3 +20,6 @@ Just some helpful lines for my use
     # 
     # 
     #  
+
+curl http://localhost:8000/cog/stac?url=https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase1/KY_KYAPED_2014_6IN/N135E128_2014_6IN_cog.tif -o file_n
+ame.json

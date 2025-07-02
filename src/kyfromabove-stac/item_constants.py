@@ -147,7 +147,7 @@ def assign_end_datetime(item):
                 if "2012" in item:
                     return datetime(2012, 3, 27, 12, 0, 0)
                 elif "2013" in item:
-                    return datetime(2013, 7, 20, 12, 0, 0)
+                    return datetime(2013, 4, 20, 12, 0, 0)
                 elif "2014" in item:
                     return datetime(2014, 4, 19, 0, 0, 0)
             elif "Phase2" in item:
