@@ -6,17 +6,17 @@ various items.
 Files will be saved locally then loaded to AWS or directly save to AWS.
 """
 
-import requests
-import json
-import os
-import pandas as pd
-import multiprocessing
 import gc
+import multiprocessing
+import os
 
-product = "dem-phase3"
+import pandas as pd
+import requests
+
+product = "orthos-phase1"
 output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/collections/thumbnails/{product}"
-image_service = "Ky_DEM_KYAPED_2FT_Phase3"
-category = "Elevation"
+image_service = "Ky_KYAPED_Phase1_6IN_WGS84WM"
+category = "Imagery"
 titiler_endpoint = "http://localhost:8000/cog/bounds"  # fixed endpoint
 csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 
