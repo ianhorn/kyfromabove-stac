@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 titiler-items
+items_v1.1.0
 
 # C extensions
 *.so
