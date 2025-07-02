@@ -11,13 +11,14 @@ import json
 import os
 import pandas as pd
 import multiprocessing
+import gc
 
-product = "dem-phase1"
-output_dir = f"collections/thumbnails/{product}"
-image_service = "Ky_DEM_KYAPED_5FT"
+product = "dem-phase3"
+output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/collections/thumbnails/{product}"
+image_service = "Ky_DEM_KYAPED_2FT_Phase3"
 category = "Elevation"
 titiler_endpoint = "http://localhost:8000/cog/bounds"  # fixed endpoint
-csv = f"csv/{product}.csv"
+csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -74,6 +75,8 @@ def create_thumbnail(url):
             
     except Exception as e:
         print("Error downloading thumbnail:", e)
+        
+    gc.collect()
 
 if __name__ == "__main__":
     with multiprocessing.Pool(processes=18) as pool:
