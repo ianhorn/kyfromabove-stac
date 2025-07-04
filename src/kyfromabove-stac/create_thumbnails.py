@@ -4,6 +4,11 @@ to get coordinates that are then used to create thumbnails of the
 various items.
 Files will be saved locally then loaded to AWS or directly save to AWS.
 """
+"""
+This script leverages the titiler API running on localhost
+to get bounding boxes that are used to create thumbnails of
+various items. Files will be saved locally and optionally uploaded to AWS.
+"""
 
 import os
 import gc
@@ -12,22 +17,18 @@ import requests
 import mimetypes
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# edit these three variable according to different collections
+# Editable parameters
 product = "dem-phase1"
 image_service = "Ky_DEM_KYAPED_5FT"
-category = "Image"
-
-#thumbnail size:
+category = "Elevation"
 size = "200,200"
-# compression quality
-cq = ""
-
-output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/thumbnails/{product}"
-image_service = "Ky_KYAPED_Phase2_6IN"
+cq = ""  # compression quality, if applicable
 titiler_endpoint = "http://localhost:8000/cog/bounds"
-csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 
+csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
+output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/thumbnails/{product}"
 os.makedirs(output_dir, exist_ok=True)
+
 data = pd.read_csv(csv)
 
 def get_thumbnail_url(url):
@@ -38,13 +39,30 @@ def get_thumbnail_url(url):
             if not bounds:
                 return None
             bbox = ",".join(map(str, bounds))
-            return (
-                f"https://kyraster.ky.gov/arcgis/rest/services/"
-                f"{category}Services/{image_service}_WGS84WM/ImageServer/"
-                f"exportImage?bbox={bbox}&bboxSR=4326&imageSR=3857&"
-                f"format=pngjpg&compressionQuality={cq}&size={size}&f=image"
-            )
-        return None
+            print(f"BBox: {bbox}")
+
+            if category == "Elevation":
+                return (
+                    f"https://kyraster.ky.gov/arcgis/rest/services/ElevationServices/"
+                    f"{image_service}_WGS84WM/ImageServer/exportImage?bbox={bbox}&bboxSR=4326&"
+                    f"size=200%2C200&imageSR=&time=&format=png&pixelType=F32&noData=&"
+                    f"noDataInterpretation=esriNoDataMatchAny&interpolation=+RSP_BilinearInterpolation&"
+                    f"compression=&compressionQuality=&bandIds=&mosaicRule=&renderingRule=&f=image"
+                )
+            elif category == "Image":
+                return (
+                    f"https://kyraster.ky.gov/arcgis/rest/services/ImageServices/"
+                    f"{image_service}_WGS84WM/ImageServer/exportImage?bbox={bbox}"
+                    f"&bboxSR=4326&size=200%2C200&imageSR=&time=&format=png&pixelType="
+                    f"U8&noData=&noDataInterpretation=esriNoDataMatchAny&"
+                    f"interpolation=+RSP_BilinearInterpolation&compression="
+                    f"compressionQuality=75&bandIds=&mosaicRule=&renderingRule=&f=image"
+                )
+            else: 
+                print("something is wrong with your image service URL\n")
+        else:
+            print(f"Titiler bounds request failed: {response.status_code}")
+            return None
     except Exception as e:
         print("Error getting bounds:", e)
         return None
@@ -58,11 +76,7 @@ def create_thumbnail(url):
     try:
         response = requests.get(thumbnail_url)
         if response.status_code == 200:
-            content_type = response.headers.get("Content-Type", "").lower()
-            ext = mimetypes.guess_extension(content_type)
-            # if ext is None:
-            #     ext = ".jpg" if "jpeg" in content_type else ".png"
-            ext = ".png"
+            ext = ".png"  # force PNG because ArcGIS usually responds with it
             outfile = os.path.join(output_dir, os.path.splitext(image_name)[0] + ext)
             if os.path.exists(outfile):
                 print(f"Skipping (already exists): {outfile}")
@@ -71,21 +85,16 @@ def create_thumbnail(url):
                 file.write(response.content)
             print(f"Thumbnail saved: {outfile}")
         else:
-            print(f"Bad response: {response.status_code} for {url}")
+            print(f"Bad response ({response.status_code}) for {thumbnail_url}")
     except Exception as e:
-        print(f"Error downloading thumbnail for {url}:", e)
-    finally:
-        gc.collect()
+        print("Error creating thumbnail:", e)
 
 if __name__ == "__main__":
     urls = data["aws_url"].dropna().tolist()
-
-    # Use a thread pool with 10 workers
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(create_thumbnail, url) for url in urls]
         for future in as_completed(futures):
-            # Optional: catch unexpected errors
             try:
                 future.result()
             except Exception as e:
-                print("Unhandled error:", e)
+                print("Unhandled error in worker:", e)
