@@ -18,8 +18,8 @@ import requests
 
 # Editable parameters
 product = "dem-phase2"
-image_service = "Ky_DEM_KYAPED_2FT_Phase2"
-category = "Elevation"
+image_service = "Ky_KYAPED_Phase2_6IN"
+category = "Image"
 size = "200,200"
 cq = ""  # compression quality, if applicable
 titiler_endpoint = "http://localhost:8000/cog/bounds"
