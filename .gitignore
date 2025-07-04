@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 titiler-items
 items_v1.1.0
-
+misc.py
 # C extensions
 *.so
 collections/thumbnails/*

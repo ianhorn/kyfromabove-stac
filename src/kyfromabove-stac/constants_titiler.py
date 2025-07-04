@@ -6,43 +6,44 @@ more filtering by datetime.
 
 def assign_datetime(url):
     try:
-        if "Phase1" in url:
-            if "2010" in url:
-                return "2010-03-18/2010-06-07"
-            elif "2011" in url:
-                return "2011-04-12/2011-04-10"
-            elif "2012" in url:
-                return "2012-11-06/2013-04-08"
-            elif "2013" in url:
-                return "2012-11-06/2014-10-13"
-            elif "2014" in url:
-                return "2014-11-19/2015-01-28"
-            elif "2015" in url:
-                return "2015-04-11/2016-01-02"
-            elif "2016" in url:
-                return "2016-02-17/2016-02-28"
-            elif "2017" in url:
-                return "2016-12-15/2017-04-02"
-        elif "Phase2" in url:
-            if "2019" in url:
-                return "2019-02-19/2019-03-23"
-            elif "2020" in url:
-                return "2019-12-05/2020-03-16"
-            elif "2021" in url:
-                return "2021-03-04/2021-03-16"
-            elif "2022" in url:
-                return "2022-02-07/2022-02-05"
-            elif "2023" in url:
-                return "2022-12-12/2023-03-05"
-            elif "2024" in url:
-                return "2024-01-08/2024-02-05"
-        elif "Phase3" in url:
-            if "2022" in url:
-                return "2022-02-07/2022-04-14"
-            elif "2023" in url:
-                return "2022-12-12/2023-03-05"
-            elif "2024" in url:
-                return "2024-01-08/2024-02-05"
+        if "DEM" in url:
+            if "Phase1" in url:
+                if "2010" in url:
+                    return "2010-03-18/2010-06-07"
+                elif "2011" in url:
+                    return "2010-04-12/2011-04-10"
+                elif "2012" in url:
+                    return "2012-11-06/2013-04-08"
+                elif "2013" in url:
+                    return "2012-11-06/2014-10-13"
+                elif "2014" in url:
+                    return "2014-11-19/2015-01-28"
+                elif "2015" in url:
+                    return "2015-04-11/2016-01-02"
+                elif "2016" in url:
+                    return "2016-02-17/2016-02-28"
+                elif "2017" in url:
+                    return "2016-12-15/2017-04-02"
+            elif "Phase2" in url:
+                if "2019" in url:
+                    return "2019-02-19/2019-03-23"
+                elif "2020" in url:
+                    return "2019-12-05/2020-03-16"
+                elif "2021" in url:
+                    return "2021-03-04/2021-03-16"
+                elif "2022" in url:
+                    return "2022-01-07/2022-02-05"
+                elif "2023" in url:
+                    return "2022-12-12/2023-03-05"
+                elif "2024" in url:
+                    return "2024-01-08/2024-02-05"
+            elif "Phase3" in url:
+                if "2022" in url:
+                    return "2022-02-07/2022-04-14"
+                elif "2023" in url:
+                    return "2022-12-12/2023-03-05"
+                elif "2024" in url:
+                    return "2024-01-08/2024-02-05"
         elif "orthos" in url:
             if "Phase1" in url:
                 if "2012" in url:
@@ -75,7 +76,7 @@ def assign_datetime(url):
     except Exception as e:
         print(e)
 
-    return url_datetime
+    # return url_datetime
 
 def assign_collection(url):
     """

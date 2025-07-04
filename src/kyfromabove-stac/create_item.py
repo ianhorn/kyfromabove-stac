@@ -1,7 +1,7 @@
 import requests
 import json
 import pystac
-from constants import assign_datetime, assign_collection
+from constants_titiler import assign_datetime, assign_collection
 
 cogbounds_request_url = "http://localhost:8000/cog/bounds?url="
 stac_request_url = "http://localhost:8000/cog/stac"
@@ -97,7 +97,7 @@ def create_stac_item(url):
                 output_path = "stac_item.json"
                 with open(output_path, "w") as f:
                     json.dump(item, f, indent=2)
-                print(f"\U+1FAE0STAC item written to {output_path}")
+                print(f"✅  item written to {output_path}")
             except Exception as e:
                 print("❌ Error writing STAC item to disk:", e)
 

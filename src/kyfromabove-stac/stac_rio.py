@@ -1,6 +1,9 @@
 # import rio-stac because I like the final product
 from rio_stac import create_stac_item
 from datetime import timezone
+import os
+import pystac
+import json
 
 from item_constants import (assign_start_datetime,
                             assign_end_datetime,
@@ -23,13 +26,27 @@ def get_datetime(href):
 
     return start_datetime, end_datetime  # Return datetime objects directly
 
+def get_thumbnail_asset(url):
+  base_filename = os.path.basename(url)
+  thumbnail_name = os.path.splitext(base_filename)[0] + ".png"
+  thumbnail_url = f"{thumbnail_folder}/{thumbnail_name}"
+
+  return {
+    "href": thumbnail_url,
+    "title": "Thumbnail",
+    "type": "image/png",
+    "roles": ["thumbnail"],
+  }
+
+
 def create_item(href):  
     """
     Set the parameters I want
     """
     collection = assign_collection(href)
     start_datetime, end_datetime = get_datetime(href)  # pulls the datetime from the name in the constants script
-    asset_roles = ['data']  # have to set this up as a dictionary or it won't validate
+    asset_roles = ['data', 'visual', ]  # have to set this up as a dictionary or it won't validate
+    asset_media_type = "image/tiff; application=geotiff; profile=cloud-optimized",
     properties = {}
     properties = get_item_properties(href)
     if "cog" in href.lower():
@@ -58,14 +75,38 @@ def create_item(href):
             item.properties["end_datetime"] = end_datetime.strftime('%Y-%m-%dT%H:%M:%S') + "Z"  # With UTC offset
 
         print(f"STAC item {item.id} created successfully.")
+
+        # Add thumbnail asset
+        thumbnail_info = get_thumbnail_asset(href)
+        if thumbnail_info:
+            item.add_asset(
+                "thumbnail",
+                pystac.Asset(
+                    href=thumbnail_info["href"],
+                    media_type=thumbnail_info["type"],
+                    roles=thumbnail_info["roles"],
+                    title=thumbnail_info["title"]
+                )
+            )
+            print(f"Thumbnail added for {item.id}")
+            
+        print(json.dumps(item.to_dict(), indent=2))
+        
+        outfile = os.path.join(output_dir, f"{item.id}.json")
+        
+        
+        with open(outfile, 'w') as f:
+            json.dump(item.to_dict(), f, indent=2)
+        print(f"✅  item written to {outfile}")
+
         return item
-
+    
     except Exception as e:
-        print(f"Error creating STAC item: {e}\n")
-        return None
+        print(e)
 
 
-def main(input_file, output_dir):
+# def main(input_file, output_dir):
+def main(input_file):
     href = input_file
 
     item = create_item(href)  # Get the created item
@@ -76,5 +117,11 @@ def main(input_file, output_dir):
     # else:
     #     print(json.dumps(item.to_dict(), indent=2))
 if __name__ == '__main__':
-    input_file = 'https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2023_Season1_3IN/N036E330_2023_Season1_3IN_cog.tif'
+    input_file = 'https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2024_Season1_3IN/N203E093_2024_Season1_3IN_cog.tif'
+    # titiler_endpoint = "http://localhost:8000/cog/stac"
+    item_collection = "orthos-phase3"
+    # stac_api_url = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{item_collection}/items"
+    thumbnail_folder = f"https://kyfromabove-stac-us-west-2.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
+    output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{item_collection}" 
+    
     main(input_file)
