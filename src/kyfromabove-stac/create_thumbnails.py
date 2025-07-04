@@ -13,11 +13,16 @@ import mimetypes
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # edit these three variable according to different collections
-product = "orthos-phase2"
-image_service = "Ky_KYAPED_Phase2_6IN"
+product = "dem-phase1"
+image_service = "Ky_DEM_KYAPED_5FT"
 category = "Image"
 
-output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/collections/thumbnails/{product}"
+#thumbnail size:
+size = "200,200"
+# compression quality
+cq = ""
+
+output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/thumbnails/{product}"
 image_service = "Ky_KYAPED_Phase2_6IN"
 titiler_endpoint = "http://localhost:8000/cog/bounds"
 csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
@@ -37,7 +42,7 @@ def get_thumbnail_url(url):
                 f"https://kyraster.ky.gov/arcgis/rest/services/"
                 f"{category}Services/{image_service}_WGS84WM/ImageServer/"
                 f"exportImage?bbox={bbox}&bboxSR=4326&imageSR=3857&"
-                f"format=pngjpg&compressionQuality=50&size=431,350&f=image"
+                f"format=pngjpg&compressionQuality={cq}&size={size}&f=image"
             )
         return None
     except Exception as e:
