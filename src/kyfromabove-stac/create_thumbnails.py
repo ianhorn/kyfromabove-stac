@@ -17,8 +17,8 @@ import pandas as pd
 import requests
 
 # Editable parameters
-product = "dem-phase2"
-image_service = "Ky_DEM_KYAPED_2FT_Phase2"
+product = "dem-phase3"
+image_service = "Ky_DEM_KYAPED_2FT_Phase3"
 category = "Elevation"
 size = "200,200"
 cq = ""  # compression quality, if applicable
