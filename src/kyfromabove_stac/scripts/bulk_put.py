@@ -8,6 +8,7 @@ def put_item(args):
     api_url_base = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
 
     try:
+        item_list = []
         if acq_phase not in file:
             print(f"⏭️ Skipping {file} (does not match phase '{acq_phase}')")
             return None
@@ -39,8 +40,8 @@ def put_item(args):
 
 
 if __name__ == "__main__":
-    phase = "dem-phase2"
-    acq_phase = "Phase2"
+    phase = "dem-phase1"
+    acq_phase = "Phase1"
     folder = "C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dems/"
 
     files = [
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     # Now include acq_phase in the task list
     tasks = [(f, phase, acq_phase) for f in files]
 
-    with ProcessPoolExecutor(max_workers=4) as executor:
+    with ProcessPoolExecutor(max_workers=12) as executor:
         results = list(executor.map(put_item, tasks))
 
     print("✅ All done.")
