@@ -1,9 +1,8 @@
 import os
 import json
 
-phase = "Phase2"
-product = "dem-phase2"
-stac_folder = "C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dems"
+product = "orthos-phase3"
+stac_folder = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{product}"
 thumbnail_base_url = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{product}"
 
 count = 0
@@ -24,10 +23,6 @@ for filename in os.listdir(stac_folder):
         except json.JSONDecodeError:
             print(f"❌ Invalid JSON: {filename}")
             continue
-
-    # Only process items that match the phase
-    if phase not in item.get("id", ""):
-        continue
 
     base_id = os.path.splitext(item["id"])[0]
     thumbnail_href = f"{thumbnail_base_url}/{base_id}.png"

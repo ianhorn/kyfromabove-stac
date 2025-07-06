@@ -4,14 +4,12 @@ import os
 from concurrent.futures import ProcessPoolExecutor
 
 def put_item(args):
-    file, phase, acq_phase = args
+    file, phase, = args
     api_url_base = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
 
     try:
         item_list = []
-        if acq_phase not in file:
-            print(f"⏭️ Skipping {file} (does not match phase '{acq_phase}')")
-            return None
+
 
         with open(file, "r", encoding="utf-8") as f:
             item = json.load(f)
@@ -40,9 +38,8 @@ def put_item(args):
 
 
 if __name__ == "__main__":
-    phase = "dem-phase1"
-    acq_phase = "Phase1"
-    folder = "C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dems/"
+    phase = "orthos-phase3"
+    folder = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{phase}/"
 
     files = [
         os.path.join(folder, f)
@@ -50,8 +47,7 @@ if __name__ == "__main__":
         if f.endswith(".json")
     ]
 
-    # Now include acq_phase in the task list
-    tasks = [(f, phase, acq_phase) for f in files]
+    tasks = [(f, phase) for f in files]
 
     with ProcessPoolExecutor(max_workers=12) as executor:
         results = list(executor.map(put_item, tasks))
