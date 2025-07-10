@@ -8,6 +8,7 @@ misc.py
 # C extensions
 *.so
 collections/thumbnails/*
+src/kyfromabove_stac/pointcloud-main/*
 # Distribution / packaging
 .Python
 build/
