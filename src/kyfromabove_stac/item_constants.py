@@ -28,7 +28,7 @@ def assign_start_datetime(item):
                 elif "2011" in item:
                     return datetime(2010, 4, 12, 0, 0, 0)
                 elif  "2012" in item:
-                    return datetime(2012, 3, 12, 16, 18, 0)
+                    return datetime(2011, 11, 6, 0, 0, 0)
                 elif "2013" in item:
                     return datetime(2012, 11, 6, 0, 0, 0)
                 elif "2014" in item:
@@ -47,7 +47,7 @@ def assign_start_datetime(item):
                 elif "2021" in item:
                     return datetime(2021, 3, 4, 0, 0, 0)
                 elif "2022" in item:
-                    return datetime(2022, 2, 7, 0, 0, 0)
+                    return datetime(2022, 1, 7, 0, 0, 0)
                 elif "2023" in item:
                     return datetime(2022, 12, 12, 0, 0, 0)
                 elif "2024" in item:
@@ -56,7 +56,7 @@ def assign_start_datetime(item):
                 if "2022" in item:
                     return datetime(2022, 2, 7, 0, 0, 0)
                 elif "2023" in item:
-                    return datetime(2012, 12, 12, 0, 0, 0)
+                    return datetime(2022, 12, 12, 0, 0, 0)
                 elif "2024" in item:
                     return datetime(2024, 1, 8, 0, 0, 0)
         elif "orthos" in item:
