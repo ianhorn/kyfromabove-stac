@@ -65,7 +65,7 @@ def create_item(href):
         return None
 
 
-def main(input_file, output_dir):
+def main(input_file):
     href = input_file
 
     item = create_item(href)  # Get the created item
