@@ -17,7 +17,7 @@ from constants_titiler import assign_datetime, assign_collection
 titiler_endpoint = "http://localhost:8000/cog/stac"
 item_collection = "orthos-phase3"
 stac_api_url = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{item_collection}/items"
-thumbnail_folder = f"https://kyfromabove-stac-us-west-2.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
+thumbnail_folder = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
 item_output = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{item_collection}"
 
 def get_tfw_asset(url):
@@ -25,7 +25,7 @@ def get_tfw_asset(url):
   
   return {
     "href": world_file,
-    "title": "World File",
+    "title": "world file",
     "type": "text/plain",
     "roles": ["metadata"]
   }
@@ -37,7 +37,7 @@ def get_thumbnail_asset(url):
 
   return {
     "href": thumbnail_url,
-    "title": "Thumbnail",
+    "title": "thumbnail",
     "type": "image/png",
     "roles": ["thumbnail"],
   }
@@ -47,6 +47,30 @@ def get_item_attributes(url):
   datetime_str = assign_datetime(url)
   collection = assign_collection(url)
   return datetime_str, collection
+
+def fix_band_descriptions(item):
+    # Check if 'eo:bands' is in any asset, here specifically 'data'
+    assets = item.get("assets", {})
+    data_asset = assets.get("data", {})
+    eo_bands = data_asset.get("eo:bands")
+    if eo_bands:
+        if "properties" not in item or not isinstance(item["properties"], dict):
+            item["properties"] = {}
+        # Copy eo:bands from asset to properties
+        item["properties"]["eo:bands"] = eo_bands
+
+        # Optional: Fix 'undefined' description if you want:
+        for band in item["properties"]["eo:bands"]:
+            if band.get("description", "").lower() == "undefined":
+                band["description"] = "infrared"  # or "near-infrared"
+                
+def fix_datetime(item):
+    props = item.get("properties", {})
+    if props.get("datetime") is None:
+        start_dt = props.get("start_datetime")
+        if start_dt is not None:
+            props["datetime"] = start_dt
+            item["properties"] = props
 
 def create_stac_item(url):
   datetime_str, collection = get_item_attributes(url)
@@ -63,16 +87,16 @@ def create_stac_item(url):
     response = requests.get(titiler_endpoint, params=params)
     if response.ok:
       item = response.json()
-
+      fix_band_descriptions(item)
+      fix_datetime(item)
+      
       # Add thumbnail asset
       thumbnail_asset = get_thumbnail_asset(url)
       tfw_asset = get_tfw_asset(url)
       if "assets" not in item or not isinstance(item["assets"], dict):
         item["assets"] = {}
       item["assets"]["thumbnail"] = thumbnail_asset
-      item["assets"]["metadata"] = tfw_asset    
-      item["properties"].pop("datetime", None) 
-  
+      item["assets"]["metadata"] = tfw_asset      
 
       print(json.dumps(item, indent=2))
 

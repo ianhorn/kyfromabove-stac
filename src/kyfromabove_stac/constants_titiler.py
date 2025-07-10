@@ -97,3 +97,18 @@ def assign_collection(url):
         return "dem-phase3"
     else:
         return None
+    
+def get_item_properties(href) -> dict:
+    properties = {"license": "CC-BY-4.0"}
+
+    # add band properties for orthos
+    if "orthos" in href:
+        eo_bands = {
+            "band 1": "Red",
+            "band 2": "Green",
+            "band 3": "Blue",
+            "band 4": "Near-Infrared"
+        }
+        properties["eo_bands"] = eo_bands
+
+    return properties
