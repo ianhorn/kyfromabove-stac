@@ -3,6 +3,9 @@ import requests
 import os
 from concurrent.futures import ProcessPoolExecutor
 
+max_workers = input("How many workers do you want?\nUse no more than 60% capacity: ")
+
+
 def put_item(args):
     file, phase, = args
     api_url_base = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
@@ -48,7 +51,7 @@ if __name__ == "__main__":
 
     tasks = [(f, phase) for f in files]
 
-    with ProcessPoolExecutor(max_workers=8) as executor:
+    with ProcessPoolExecutor(max_workers=18) as executor:
         results = list(executor.map(put_item, tasks))
 
     print("✅ All done.")
