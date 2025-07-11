@@ -6,155 +6,133 @@ It will then use the titiler.extension to create a stac item
 
 Based on stac.py from which basically is rio-stac Extension.
 """
-
 import os
 import json
 import requests
+import pandas as pd
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import pystac
 
 from constants_titiler import assign_datetime, assign_collection
 
-titiler_endpoint = "http://localhost:8000/cog/stac"
-item_collection = "orthos-phase3"
-stac_api_url = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{item_collection}/items"
-thumbnail_folder = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
-item_output = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{item_collection}"
+# --- Configuration ---
+TITILER_ENDPOINT = "http://localhost:8000/cog/stac"
+ITEM_COLLECTION = "orthos-phase3"
+CSV_PATH = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{ITEM_COLLECTION}.csv"
+STAC_API_URL = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{ITEM_COLLECTION}/items"
+THUMBNAIL_FOLDER = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{ITEM_COLLECTION}"
+ITEM_OUTPUT_DIR = Path(f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{ITEM_COLLECTION}")
 
+# --- Load URLs ---
+urls = pd.read_csv(CSV_PATH)['aws_url'].dropna().tolist()
+
+# --- Asset Creators ---
 def get_tfw_asset(url):
-  world_file = os.path.splitext(url)[0] + ".tfw"
-  
-  return {
-    "href": world_file,
-    "title": "world file",
-    "type": "text/plain",
-    "roles": ["metadata"]
-  }
+    return {
+        "href": os.path.splitext(url)[0] + ".tfw",
+        "title": "world file",
+        "type": "text/plain",
+        "roles": ["metadata"],
+    }
 
 def get_thumbnail_asset(url):
-  base_filename = os.path.basename(url)
-  thumbnail_name = os.path.splitext(base_filename)[0] + ".png"
-  thumbnail_url = f"{thumbnail_folder}/{thumbnail_name}"
+    name = Path(url).stem + ".png"
+    return {
+        "href": f"{THUMBNAIL_FOLDER}/{name}",
+        "title": "thumbnail",
+        "type": "image/png",
+        "roles": ["thumbnail"],
+    }
 
-  return {
-    "href": thumbnail_url,
-    "title": "thumbnail",
-    "type": "image/png",
-    "roles": ["thumbnail"],
-  }
-
-def get_item_attributes(url):
-  """Calling attributes from constants_titiler.py"""
-  datetime_str = assign_datetime(url)
-  collection = assign_collection(url)
-  return datetime_str, collection
-
+# --- STAC Fixers ---
 def fix_band_descriptions(item):
-    # Check if 'eo:bands' is in any asset, here specifically 'data'
-    assets = item.get("assets", {})
-    data_asset = assets.get("data", {})
+    data_asset = item.get("assets", {}).get("data", {})
     eo_bands = data_asset.get("eo:bands")
     if eo_bands:
-        if "properties" not in item or not isinstance(item["properties"], dict):
-            item["properties"] = {}
-        # Copy eo:bands from asset to properties
-        item["properties"]["eo:bands"] = eo_bands
-
-        # Optional: Fix 'undefined' description if you want:
-        for band in item["properties"]["eo:bands"]:
+        item.setdefault("properties", {})["eo:bands"] = eo_bands
+        for band in eo_bands:
             if band.get("description", "").lower() == "undefined":
-                band["description"] = "infrared"  # or "near-infrared"
-                
+                band["description"] = "infrared"
+
 def fix_datetime(item):
     props = item.get("properties", {})
-    if props.get("datetime") is None:
-        start_dt = props.get("start_datetime")
-        if start_dt is not None:
-            props["datetime"] = start_dt
-            item["properties"] = props
+    if props.get("datetime") is None and props.get("start_datetime"):
+        props["datetime"] = props["start_datetime"]
 
+# --- Item Creation ---
 def create_stac_item(url):
-  datetime_str, collection = get_item_attributes(url)
+    datetime_str = assign_datetime(url)
+    collection = assign_collection(url)
+    params = {
+        "url": url,
+        "datetime": datetime_str,
+        "collection": collection,
+        "asset_media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
+        "asset_roles": ["data", "visual"],
+    }
 
-  params = {
-    "url": url,
-    "datetime": datetime_str,
-    "collection": collection,
-    "asset_media_type": "image/tiff; application=geotiff; profile=cloud-optimized",
-    "asset_roles": ["data", "visual"],
-  }
+    try:
+        response = requests.get(TITILER_ENDPOINT, params=params)
+        if not response.ok:
+            print(f"❌ Failed to process {url}: {response.status_code} {response.text}")
+            return
 
-  try:
-    response = requests.get(titiler_endpoint, params=params)
-    if response.ok:
-      item = response.json()
-      fix_band_descriptions(item)
-      fix_datetime(item)
-      
-      # Add thumbnail asset
-      thumbnail_asset = get_thumbnail_asset(url)
-      tfw_asset = get_tfw_asset(url)
-      if "assets" not in item or not isinstance(item["assets"], dict):
-        item["assets"] = {}
-      item["assets"]["thumbnail"] = thumbnail_asset
-      item["assets"]["metadata"] = tfw_asset      
+        item = response.json()
+        fix_band_descriptions(item)
+        fix_datetime(item)
+        item.setdefault("assets", {})
+        item["assets"]["thumbnail"] = get_thumbnail_asset(url)
+        item["assets"]["metadata"] = get_tfw_asset(url)
 
-      print(json.dumps(item, indent=2))
+        # Validate STAC
+        try:
+            pystac.Item.from_dict(item).validate()
+            print("✅ STAC item validated successfully.")
+        except Exception as e:
+            print(f"❌ STAC item validation failed: {e}")
+            return
 
-      # Validate STAC item
-      try:
-        stac_item = pystac.Item.from_dict(item)
-        stac_item.validate()
-        print("✅ STAC item validated successfully.")
-      except Exception as e:
-        print(f"❌ STAC item validation failed: {e}")
-        return None
+        # Post to STAC API
+        try:
+            post = requests.post(STAC_API_URL, headers={"Content-Type": "application/json"}, data=json.dumps(item))
+            if post.ok:
+                print("✅ STAC item posted successfully.")
+            else:
+                print(f"❌ Failed to post STAC item: {post.status_code} {post.text}")
+        except Exception as e:
+            print(f"❌ Error posting to STAC API: {e}")
 
-      # ✅ Post to STAC API
-      try:
-          post_response = requests.post(
-              stac_api_url,
-              headers={"Content-Type": "application/json"},
-              data=json.dumps(item)
-          )
-          if post_response.ok:
-              print("✅ STAC item posted successfully.")
-          else:
-              print("❌ Failed to post STAC item.")
-              print("Status code:", post_response.status_code)
-              print("Response:", post_response.text)
-      except Exception as e:
-          print("❌ Error posting to STAC API:", e)
+        # Write to disk
+        output_path = ITEM_OUTPUT_DIR / f"{Path(url).stem}.json"
+        if not output_path.exists():
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(output_path, "w") as f:
+                json.dump(item, f, indent=2)
+            print(f"✅ Item written to {output_path}")
+        else:
+            print(f"⚠️ Skipping existing item: {output_path}")
 
-      # ✅ Write to disk
-      try:
-        base_filename = os.path.basename(url)
-        item_name = os.path.splitext(base_filename)[0] + ".json"
-        output_path = f"{item_output}/{item_name}"
+    except Exception as e:
+        print(f"❌ Unexpected error for {url}: {e}")
 
-        # Make sure directory exists
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-        with open(output_path, "w") as f:
-          json.dump(item, f, indent=2)
-        print(f"✅  item written to {output_path}")
-      except Exception as e:
-        print("❌ Error writing STAC item to disk:", e)
-
-      return item
-
-    else:
-      print("❌ Failed to process", url)
-      print("Status code:", response.status_code)
-      print("Response text:", response.text)
-      return None
-
-  except Exception as e:
-    print(f"❌ Error occurred while processing {url}: {e}")
-    return None
-
-def main(url):
-  create_stac_item(url)
+# --- Main ---
+def main(urls_to_process=None):
+    if urls_to_process is None:
+        urls_to_process = urls
+    with ThreadPoolExecutor(max_workers=12) as executor:
+        futures = {executor.submit(create_stac_item, url): url for url in urls_to_process}
+        for future in as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                print(f"❌ Exception processing {futures[future]}: {e}")
 
 if __name__ == "__main__":
-  url = "https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2024_Season1_3IN/N203E093_2024_Season1_3IN_cog.tif"
-  main(url)
+    # For full batch run:
+    main()
+
+    # For single test run:
+    # main([
+    #     "https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2024_Season1_3IN/N203E093_2024_Season1_3IN_cog.tif"
+    # ])
