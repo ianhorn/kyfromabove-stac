@@ -18,23 +18,26 @@ from constants_titiler import assign_datetime, assign_collection
 
 # --- Configuration ---
 TITILER_ENDPOINT = "http://localhost:8000/cog/stac"
-ITEM_COLLECTION = "orthos-phase3"
+ITEM_COLLECTION = "orthos-phase2"
 CSV_PATH = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{ITEM_COLLECTION}.csv"
 STAC_API_URL = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{ITEM_COLLECTION}/items"
 THUMBNAIL_FOLDER = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{ITEM_COLLECTION}"
 ITEM_OUTPUT_DIR = Path(f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{ITEM_COLLECTION}")
-
+max_workers = 16
 # --- Load URLs ---
 urls = pd.read_csv(CSV_PATH)['aws_url'].dropna().tolist()
 
 # --- Asset Creators ---
 def get_tfw_asset(url):
-    return {
-        "href": os.path.splitext(url)[0] + ".tfw",
-        "title": "world file",
-        "type": "text/plain",
-        "roles": ["metadata"],
-    }
+    if not "Phase3" in url:
+        return None
+    else:
+        return {
+            "href": os.path.splitext(url)[0] + ".tfw",
+            "title": "world file",
+            "type": "text/plain",
+            "roles": ["metadata"],
+        }
 
 def get_thumbnail_asset(url):
     name = Path(url).stem + ".png"
@@ -83,7 +86,9 @@ def create_stac_item(url):
         fix_datetime(item)
         item.setdefault("assets", {})
         item["assets"]["thumbnail"] = get_thumbnail_asset(url)
-        item["assets"]["metadata"] = get_tfw_asset(url)
+        tfw_asset = get_tfw_asset(url)
+        if tfw_asset:
+            item["assets"]["metadata"] = tfw_asset
 
         # Validate STAC
         try:
@@ -120,7 +125,7 @@ def create_stac_item(url):
 def main(urls_to_process=None):
     if urls_to_process is None:
         urls_to_process = urls
-    with ThreadPoolExecutor(max_workers=12) as executor:
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(create_stac_item, url): url for url in urls_to_process}
         for future in as_completed(futures):
             try:

@@ -10,7 +10,6 @@ def put_item(args):
     try:
         item_list = []
 
-
         with open(file, "r", encoding="utf-8") as f:
             item = json.load(f)
 
@@ -38,7 +37,7 @@ def put_item(args):
 
 
 if __name__ == "__main__":
-    phase = "orthos-phase3"
+    phase = "orthos-phase2"
     folder = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{phase}/"
 
     files = [
@@ -49,7 +48,7 @@ if __name__ == "__main__":
 
     tasks = [(f, phase) for f in files]
 
-    with ProcessPoolExecutor(max_workers=12) as executor:
+    with ProcessPoolExecutor(max_workers=8) as executor:
         results = list(executor.map(put_item, tasks))
 
     print("✅ All done.")
