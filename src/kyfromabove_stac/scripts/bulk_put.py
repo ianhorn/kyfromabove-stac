@@ -3,9 +3,6 @@ import requests
 import os
 from concurrent.futures import ProcessPoolExecutor
 
-max_workers = input("How many workers do you want?\nUse no more than 60% capacity: ")
-
-
 def put_item(args):
     file, phase, = args
     api_url_base = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
