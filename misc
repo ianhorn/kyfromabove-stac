@@ -1,0 +1,9 @@
+
+# run a detached container that you will attach in vs code
+docker run -dit -v C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items:/app -w /app --name pointcloud ianhorn/stactools-pointcloud:v1.0.0 tail -f /dev/null
+
+docker run -dit --name pointcloud \
+  -v $PWD:/workspace \
+  -w /workspace \
+  ianhorn/stactools-pointcloud:v1.0.0 \
+  sleep infinity

@@ -7,6 +7,12 @@ items_v1.1.0
 misc.py
 # C extensions
 *.so
+.DS_Store
+dem-phase1
+*_cog.tif.json
+*_cog.json
+items*
+items_v*
 collections/thumbnails/*
 src/kyfromabove_stac/pointcloud-main/*
 # Distribution / packaging
