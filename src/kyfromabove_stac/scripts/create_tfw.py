@@ -1,10 +1,35 @@
 import os
-from osgeo import gdal
+import rasterio
+import boto3
+import pandas as pd
 
-pwd = os.getcwd()
-product = "orthos"
-phase = "phase1"
-csv = f'{pwd}/csv/{product}-{phase}.csv'
+phase = 'phase1'  # update this
+product = 'tfw'
+csv = f'csv/orthos-{phase}.csv'
 
-# print(f'\n{csv}\n')
+tifs = pd.read_csv(csv)
 
+def create_tfw(tif):
+
+
+    # Open the dataset
+    with rasterio.open(tif) as dataset:
+        if os.path.exists(output_tfw):
+            transform = dataset.transform
+
+            # Extract GeoTransform values
+            tfw_values = [
+                transform.a,     # pixel width
+                transform.b,     # row rotation (typically zero)
+                transform.d,     # column rotation (typically zero)
+                transform.e,     # pixel height (usually negative)
+                transform.c,     # x-coordinate of center of upper-left pixel
+                transform.f      # y-coordinate of center of upper-left pixel
+            ]
+
+            # Write values to a .tfw file
+            with open(output_tfw, 'w') as f:
+                for value in tfw_values:
+                    f.write(f"{value}\n")
+
+    print(f".tfw file created: {output_tfw}")
