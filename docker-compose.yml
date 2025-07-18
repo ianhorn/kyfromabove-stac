@@ -1,0 +1,10 @@
+
+services:
+  pointcloud:
+    image: ianhorn/stactools-pointcloud:v1.0.0
+    platform: linux/amd64
+    entrypoint: /bin/bash  # override stac CLI
+    command: -c "tail -f /dev/null"
+    volumes:
+      - .:/app
+    working_dir: /app
