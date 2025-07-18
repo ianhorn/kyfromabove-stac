@@ -37,8 +37,8 @@ def put_item(args):
 
 
 if __name__ == "__main__":
-    phase = "orthos-phase2"
-    folder = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{phase}/"
+    phase = "laz-phase3"  # Change this
+    folder = f"C:/Users/Ian.Horn/Documents/stac-repos/pointcloud/items/{phase}/"  # Maybe change this
 
     files = [
         os.path.join(folder, f)
