@@ -44,6 +44,10 @@ def assign_datetime(url):
                     return "2022-12-12/2023-03-05"
                 elif "2024" in url:
                     return "2024-01-08/2024-02-05"
+                elif "2025" in url:
+                    return "2025-03-03/2025-03-08"
+                else: 
+                    print("datetime assignment not found")
         elif "orthos" in url:
             if "Phase1" in url:
                 if "2012" in url:

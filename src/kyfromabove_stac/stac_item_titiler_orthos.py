@@ -17,12 +17,12 @@ import pystac
 from constants_titiler import assign_datetime, assign_collection
 
 # --- Configuration ---
-TITILER_ENDPOINT = "http://localhost:8000/cog/stac"
-ITEM_COLLECTION = "orthos-phase2"
+TITILER_ENDPOINT = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac"
+ITEM_COLLECTION = "dem-phase3"
 CSV_PATH = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{ITEM_COLLECTION}.csv"
 STAC_API_URL = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{ITEM_COLLECTION}/items"
 THUMBNAIL_FOLDER = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{ITEM_COLLECTION}"
-ITEM_OUTPUT_DIR = Path(f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{ITEM_COLLECTION}")
+ITEM_OUTPUT_DIR = Path(f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{ITEM_COLLECTION}")
 max_workers = 16
 # --- Load URLs ---
 urls = pd.read_csv(CSV_PATH)['aws_url'].dropna().tolist()
@@ -82,7 +82,8 @@ def create_stac_item(url):
             return
 
         item = response.json()
-        fix_band_descriptions(item)
+        if "orthos" in url:
+            fix_band_descriptions(item)
         fix_datetime(item)
         item.setdefault("assets", {})
         item["assets"]["thumbnail"] = get_thumbnail_asset(url)
