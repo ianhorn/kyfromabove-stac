@@ -22,7 +22,7 @@ image_service = "Ky_DEM_KYAPED_2FT_Phase3"
 category = "Elevation"
 size = "200,200"
 cq = ""  # compression quality, if applicable
-titiler_endpoint = "http://localhost:8000/cog/bounds"
+titiler_endpoint = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/bounds"
 
 csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/thumbnails/{product}"
