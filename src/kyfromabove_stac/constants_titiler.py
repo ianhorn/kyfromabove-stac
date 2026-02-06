@@ -76,6 +76,9 @@ def assign_datetime(url):
                     return "2023-11-15/2023-12-12"
                 elif "2024" in url:
                     return "2024-02-01/2024-04-01"
+                
+            print("datetime assignment not found")
+            return None
 
     except Exception as e:
         print(e)
