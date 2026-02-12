@@ -16,11 +16,12 @@ from constants_titiler import assign_datetime, assign_collection
 # --- Configuration ---
 TITILER_ENDPOINT = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac"
 ITEM_COLLECTION = "dem-phase3"
-CSV_PATH = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{ITEM_COLLECTION}.csv"
+# CSV_PATH = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{ITEM_COLLECTION}.csv"
+CSV_PATH = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/dem-phase3.csv"
 STAC_API_URL = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{ITEM_COLLECTION}/items"
 THUMBNAIL_FOLDER = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{ITEM_COLLECTION}"
 ITEM_OUTPUT_DIR = Path(f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{ITEM_COLLECTION}")
-MAX_WORKERS = 16
+MAX_WORKERS = 28
 
 # --- Load URLs ---
 urls = pd.read_csv(CSV_PATH)['aws_url'].dropna().tolist()
@@ -54,7 +55,8 @@ def normalize_datetime(dt_str: str) -> str:
 def create_stac_item(url: str):
     try:
         datetime_str = normalize_datetime(assign_datetime(url))
-        collection = assign_collection(url)
+        # collection = assign_collection(url)
+        collection = 'dem-phase3'
 
         # --- Request STAC item from Titiler ---
         params = {
@@ -75,11 +77,21 @@ def create_stac_item(url: str):
         item.setdefault("properties", {})
         item["properties"]["datetime"] = datetime_str
         item["properties"]["license"] = "CC-BY-4.0"
-        item["collection"] = collection
+        # item["collection"] = collection
+
+        # # --- Add thumbnail ---
+        # item.setdefault("assets", {})
+        # item["assets"]["thumbnail"] = get_thumbnail_asset(url)
 
         # --- Add thumbnail ---
         item.setdefault("assets", {})
         item["assets"]["thumbnail"] = get_thumbnail_asset(url)
+
+        # --- Add roles/visual to main asset ---
+        main_asset = item["assets"].get("data")
+        if main_asset:
+            main_asset["roles"] = ["data", "visual"]
+            main_asset["title"] = main_asset.get("title", os.path.basename(url))
 
         # --- Validate STAC item ---
         try:
@@ -89,15 +101,15 @@ def create_stac_item(url: str):
             print(f"❌ Validation failed: {url} | {e}")
             return
 
-        # --- Post to STAC API ---
-        try:
-            post = requests.post(STAC_API_URL, headers={"Content-Type": "application/json"}, data=json.dumps(item))
-            if post.ok:
-                print(f"✅ Posted: {url}")
-            else:
-                print(f"❌ Post failed ({post.status_code}): {url} | {post.text}")
-        except Exception as e:
-            print(f"❌ Error posting {url}: {e}")
+        # # --- Post to STAC API ---
+        # try:
+        #     post = requests.post(STAC_API_URL, headers={"Content-Type": "application/json"}, data=json.dumps(item))
+        #     if post.ok:
+        #         print(f"✅ Posted: {url}")
+        #     else:
+        #         print(f"❌ Post failed ({post.status_code}): {url} | {post.text}")
+        # except Exception as e:
+        #     print(f"❌ Error posting {url}: {e}")
 
         # --- Save locally ---
         output_path = ITEM_OUTPUT_DIR / f"{Path(url).stem}.json"
