@@ -1,4 +1,3 @@
-
 # run a detached container that you will attach in vs code
 docker run -dit -v C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items:/app -w /app --name pointcloud ianhorn/stactools-pointcloud:v1.0.0 tail -f /dev/null
 
@@ -7,3 +6,11 @@ docker run -dit --name pointcloud \
   -w /workspace \
   ianhorn/stactools-pointcloud:v1.0.0 \
   sleep infinity
+
+
+export API_URL=https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/dem-phase3-backup/items
+export HEADER="Content-Type: application/json"
+
+curl -X POST $API_URL \
+-H $HEADER \
+-d @N114E299_2025_DEM_Phase3_cog.tif.json

@@ -2,7 +2,7 @@ import json
 import requests
 
 def put_item(file, phase):
-    api_url_base = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
+    api_url_base = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
 
     # Load STAC Item from file
     with open(file, "r", encoding="utf-8") as f:
@@ -30,7 +30,7 @@ def put_item(file, phase):
     return item
 
 if __name__ == "__main__":
-    file = "C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dems/N201E070_2020_DEM_Phase2_cog.json"
-    phase = "dem-phase2"
+    file = r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dem-phase3-backup\N036E321_2025_DEM_Phase3_cog.tif.json"
+    phase = "dem-phase3-backup"
 
     put_item(file, phase)

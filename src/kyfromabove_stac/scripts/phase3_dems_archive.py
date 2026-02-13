@@ -2,15 +2,22 @@
 Script to leverage src/kyfromabove-stac/stac.py script
 
 """
+
+import os
+
+os.environ["PROJ_LIB"] = r"/c/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/venv/Lib/site-packages/rasterio/proj_data"
+os.environ["GDAL_DISABLE_READDIR_ON_OPEN"] = "EMPTY_DIR"
+os.environ["CPL_VSIL_CURL_CACHE"] = "YES"
+
 import json
 from concurrent.futures import ThreadPoolExecutor
-import os
 import pandas as pd
 from stac_rio import create_item
 
-input_file = "C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/dem_urls.csv"
+input_file = "C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/dem-phase3.csv"
+thumbnail_folder = r"https://kyfromabove-stac-us-west-2.s3.us-west-2.amazonaws.com/items/thumbnails/dem-phase3"
 
-output_dir = "../items/dems"
+output_dir = "../items/dem-phase3"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
     
@@ -18,7 +25,7 @@ data = pd.read_csv(input_file)
 
 # Function to create and save STAC items as JSON
 def process_row(row):
-    href = row["url"]
+    href = row["aws_url"]
     stac_item = create_item(href)  # Assuming this returns a STAC item object
     
     # Define the output file path (using the STAC item ID or another unique identifier)
@@ -32,6 +39,6 @@ def process_row(row):
     print(f"STAC item created and saved for: {href}")
 
 # Using ThreadPoolExecutor to run tasks concurrently
-with ThreadPoolExecutor(max_workers=32) as executor:
+with ThreadPoolExecutor(max_workers=28) as executor:
     # Pass the rows of the dataframe to the executor
     executor.map(process_row, [row for _, row in data.iterrows()])

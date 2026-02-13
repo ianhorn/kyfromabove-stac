@@ -59,6 +59,8 @@ def assign_start_datetime(item):
                     return datetime(2022, 12, 12, 0, 0, 0)
                 elif "2024" in item:
                     return datetime(2024, 1, 8, 0, 0, 0)
+                elif "2025" in item:
+                    return datetime(2025, 3, 3, 0, 0, 0)
         elif "orthos" in item:
             if "Phase1" in item:
                 if "2012" in item:
@@ -142,6 +144,8 @@ def assign_end_datetime(item):
                     return datetime(2023, 3, 5, 0, 0, 0)
                 elif "2024" in item:
                     return datetime(2024, 2, 5, 0, 0, 0)
+                elif "2025" in item:
+                        return datetime(2025, 3, 8, 0, 0, 0)
         elif "orthos" in item:
             if "Phase1" in item:
                 if "2012" in item:

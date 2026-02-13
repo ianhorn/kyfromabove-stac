@@ -1,14 +1,37 @@
 # import rio-stac because I like the final product
+
+import os
+os.environ["PROJ_LIB"] = r"venv/Lib/site-packages/rasterio/proj_data"
+os.environ["GDAL_DISABLE_READDIR_ON_OPEN"] = "EMPTY_DIR"
+os.environ["CPL_VSIL_CURL_CACHE"] = "YES"
+
+# import rasterio
 from rio_stac import create_stac_item
 from datetime import timezone
-import os
 import pystac
 import json
 
+from rio_stac import create_stac_item
 from item_constants import (assign_start_datetime,
                             assign_end_datetime,
                             assign_collection,
                             get_item_properties) 
+
+# def get_datetime(href):
+#     """
+#     Returns the start and end datetime as datetime objects.
+#     """
+#     start_datetime = assign_start_datetime(href)
+#     end_datetime = assign_end_datetime(href)
+
+#     # Make the datetime objects timezone-aware (UTC)
+#     start_datetime = start_datetime.replace(tzinfo=timezone.utc)  # Set UTC timezone
+#     end_datetime = end_datetime.replace(tzinfo=timezone.utc)      # Set UTC timezone
+
+#     # Print for debugging
+#     # print(f"\nStart datetime: {start_datetime}, End datetime: {end_datetime}\n")
+
+#     return start_datetime, end_datetime  # Return datetime objects directly
 
 def get_datetime(href):
     """
@@ -18,13 +41,12 @@ def get_datetime(href):
     end_datetime = assign_end_datetime(href)
 
     # Make the datetime objects timezone-aware (UTC)
-    start_datetime = start_datetime.replace(tzinfo=timezone.utc)  # Set UTC timezone
-    end_datetime = end_datetime.replace(tzinfo=timezone.utc)      # Set UTC timezone
+    if start_datetime is not None:
+        start_datetime = start_datetime.replace(tzinfo=timezone.utc)  # Set UTC timezone
+    if end_datetime is not None:
+        end_datetime = end_datetime.replace(tzinfo=timezone.utc)      # Set UTC timezone
 
-    # Print for debugging
-    # print(f"\nStart datetime: {start_datetime}, End datetime: {end_datetime}\n")
-
-    return start_datetime, end_datetime  # Return datetime objects directly
+    return start_datetime, end_datetime
 
 def get_thumbnail_asset(url):
   base_filename = os.path.basename(url)
@@ -61,13 +83,16 @@ def create_item(href):
             # id=id  # rio-stac pulls from source
             properties = properties,
             input_datetime=start_datetime,  # Required field for the datetime
-            collection=collection,
-            with_proj=True,
+            collection='dem-phase3-backup',
+            with_proj=False,
             with_raster=True,
             with_eo = False,  # not relevant to KyFromAbove data, collection is standardized
             asset_roles=asset_roles,
             asset_media_type = asset_media_type,
         )
+
+        # Remove all links
+        item.links.clear()
 
         # Add temporal range to the item's properties if applicable
         if end_datetime:
@@ -117,11 +142,11 @@ def main(input_file):
     # else:
     #     print(json.dumps(item.to_dict(), indent=2))
 if __name__ == '__main__':
-    input_file = 'https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase3/KY_KYAPED_2024_Season1_3IN/N203E093_2024_Season1_3IN_cog.tif'
+    input_file = 'https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase3/N075E399_2025_DEM_Phase3_cog.tif'
     # titiler_endpoint = "http://localhost:8000/cog/stac"
-    item_collection = "orthos-phase3"
+    item_collection = "dem-phase3-backup"
     # stac_api_url = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/{item_collection}/items"
-    thumbnail_folder = f"https://kyfromabove-stac-us-west-2.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
-    output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items_v1.1.0/{item_collection}" 
+    thumbnail_folder = f"https://kyfromabove-stac-us-west-2.s3.us-west-2.amazonaws.com/items/thumbnails/dem-phase3"
+    output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{item_collection}" 
     
     main(input_file)
