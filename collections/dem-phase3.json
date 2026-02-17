@@ -44,6 +44,6 @@
       ]
     }
   ],
-  "description": "Phase3 (2023 - Present) Statewide LiDAR-derived Digital Elevation Model.\n\nThis collections contains Quality Level 2 or better data.  Currently, only portions of eastern Kentucky and Northern Kentucky are available.  Current statewide acquisition is ongoing.",
+  "description": "Phase 3 (2023 - Present) Statewide LiDAR-derived Digital Elevation Model.\n\nThis collections contains Quality Level 2 or better data.  Currently, only portions of eastern, northern and north central Kentucky are available.  Current statewide acquisition is ongoing.",
   "stac_version": "1.0.0"
 }

@@ -62,7 +62,7 @@ def create_item(href):
             source=href,
             properties=properties,
             input_datetime=start_datetime,
-            collection='dem-phase3-backup',
+            collection='dem-phase3',
             with_proj=True,
             with_raster=True,
             with_eo=False,
@@ -130,9 +130,9 @@ def process_bulk(urls, max_workers=48):
 # -----------------------------
 
 if __name__ == '__main__':
-    item_collection = "dem-phase3-backup"
+    item_collection = "dem-phase3"
     # thumbnail_folder = f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
-    thumbnail_folder =  r"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/dem-phase3"
+    thumbnail_folder =  f"https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/{item_collection}"
     output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{item_collection}" 
 
     # Load URLs from CSV

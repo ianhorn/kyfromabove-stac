@@ -3,8 +3,8 @@ import asyncio
 from pathlib import Path
 import aiohttp
 
-FOLDER = Path(r"C:\Users\Ian.Horn\Documents\stac-repos\existing_dem3_items")
-PHASE = "dem-phase3-backup"
+FOLDER = Path(r"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dem-phase3-existing")
+PHASE = "dem-phase3"
 API_URL_BASE = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
 
 POST_URL = f"{API_URL_BASE}{PHASE}/items"

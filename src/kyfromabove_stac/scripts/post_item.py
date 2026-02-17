@@ -30,7 +30,7 @@ def post_item(file, phase):
     return item
 
 if __name__ == "__main__":
-    file = r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dem-phase3-backup\N036E321_2025_DEM_Phase3_cog.tif.json"
-    phase = "dem-phase3-backup"
+    file = r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dem-phase3\N081E255_2025_DEM_Phase3_cog.tif.json"
+    phase = "dem-phase3"
 
     post_item(file, phase)

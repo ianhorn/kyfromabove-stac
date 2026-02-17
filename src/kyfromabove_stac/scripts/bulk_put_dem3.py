@@ -4,8 +4,8 @@ from pathlib import Path
 import aiohttp
 import async_timeout
 
-FOLDER = Path(r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dem-phase3-backup")
-PHASE = "dem-phase3-backup"
+FOLDER = Path(r"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dem-phase3")
+PHASE = "dem-phase3"
 API_URL_BASE = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
 
 # Concurrency control
