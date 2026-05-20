@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 This script leverages the titiler API running on a localhost host
 to get coordinates that are then used to create thumbnails of the 
@@ -22,7 +24,7 @@ image_service = "Ky_DEM_KYAPED_2FT_Phase3"
 category = "Elevation"
 size = "200,200"
 cq = ""  # compression quality, if applicable
-titiler_endpoint = "http://localhost:8000/cog/bounds"
+titiler_endpoint = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/"
 
 csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 output_dir = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/thumbnails/{product}"
@@ -42,12 +44,11 @@ def get_thumbnail_url(url):
 
             if category == "Elevation":
                 return (
-                    f"https://kyraster.ky.gov/arcgis/rest/services/ElevationServices/"
-                    f"{image_service}_WGS84WM/ImageServer/exportImage?bbox={bbox}&bboxSR=4326&"
-                    f"size=200%2C200&imageSR=&time=&format=png&pixelType=F32&noData=&"
-                    f"noDataInterpretation=esriNoDataMatchAny&interpolation=+RSP_BilinearInterpolation&"
-                    f"compression=&compressionQuality=&bandIds=&mosaicRule=&renderingRule=&f=image"
-                )
+                    f'https://kyraster.ky.gov/arcgis/rest/services/ElevationServices/' 
+                    f'Ky_DSM_First_Return_5FT_Phase1/ImageServer/exportImage?bbox={bbox}&bboxSR=4326&' 
+                    f'size=200,200&imageSR=3089&format=jpgpng&pixelType=F32&' f'interpolation=RSP_BilinearInterpolation&renderingRule='
+                    f'"rasterFunction":"Hillshade",' f'"rasterFunctionArguments":{"HillshadeType":1,"ZFactor":1},'
+                    f'{"variableName":"DEM"}&f=image'                    )
             elif category == "Image":
                 return (
                     f"https://kyraster.ky.gov/arcgis/rest/services/ImageServices/"

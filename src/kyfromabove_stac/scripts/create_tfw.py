@@ -4,9 +4,10 @@ import boto3
 import pandas as pd
 import concurrent.futures
 
-phase = 'phase2'  # update this
+
+phase = 'dem-phase2'  # update this
 product = 'tfw'   # world file
-csv = f'csv/orthos-{phase}-keys.csv'
+csv = f'csv/{phase}-keys.csv'
 bucket = 'kyfromabove'
 
 # get the S3 boto resource
