@@ -4,9 +4,9 @@ from pathlib import Path
 import aiohttp
 import async_timeout
 
-FOLDER = Path(r"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dem-phase3")
+FOLDER = Path('C:/Users/Ian.Horn/Documents/stac-repos/items/dem-phase3')
 PHASE = "dem-phase3"
-API_URL_BASE = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
+API_URL_BASE = 'https://drwgni8q1h.execute-api.us-west-2.amazonaws.com/collections/'
 
 # Concurrency control
 SEM = asyncio.Semaphore(28)
@@ -25,6 +25,7 @@ async def put_item(session, file_path):
 
                 item_id = item["id"]
                 put_url = f"{API_URL_BASE}{PHASE}/items/{item_id}"
+                print(put_url)
 
                 # Send PUT request
                 async with async_timeout.timeout(TIMEOUT):
