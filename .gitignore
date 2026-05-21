@@ -198,3 +198,4 @@ orthos
 ortho*.py
 phase1*.py
 phase3_orthos.py
+*.bat

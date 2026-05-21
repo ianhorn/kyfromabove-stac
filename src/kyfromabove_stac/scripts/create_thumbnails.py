@@ -7,11 +7,16 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import requests
 
-product = "orthos-phase1"
-image_service = "Ky_KYAPED_Imagery"
-category = "Imagery"
+product = "dem-phase1"
+image_service = "Ky_DEM_KYAPED_5FT"
 
-titiler_endpoint = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/bounds"
+if "DEM" in image_service:
+    category = 'Elevation'
+    
+else:
+    category = None
+
+titiler_endpoint = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/"
 
 csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 
@@ -32,7 +37,7 @@ def get_thumbnail_url(url):
 
     try:
         response = session.get(
-            titiler_endpoint,
+            f'{titiler_endpoint}cog/bounds',
             params={"url": url},
             timeout=30,
         )
@@ -51,44 +56,58 @@ def get_thumbnail_url(url):
 
         print(f"BBox: {bbox}")
 
-        if category == "Elevation":
-
-            rendering_rule = json.dumps(
-                {
-                    "rasterFunction": "Hillshade",
-                    "rasterFunctionArguments": {
-                        "HillshadeType": 1,
-                        "ZFactor": 1,
-                    },
-                    "variableName": "DEM",
+        rendering_rule = json.dumps(
+            {
+               "rasterFunction": "Hillshade",
+               "rasterFunctionArguments": {
+                   "HillshadeType": 1,
+                   "ZFactor": 1,
+                },
+                   "variableName": "DEM",
                 }
             )
 
+        if category == 'Elevation':
+            
             thumbnail_url = (
                 "https://kyraster.ky.gov/arcgis/rest/services/ElevationServices/"
-                "Ky_DSM_First_Return_5FT_Phase1/ImageServer/exportImage"
-                f"?bbox={bbox}&bboxSR=4326&size=200,200&imageSR=3089"
-                "&format=png&pixelType=UKNOWN&interpolation=RSP_BilinearInterpolation"
-                f"&renderingRule={rendering_rule}&f=image"
+                f"{image_service}/ImageServer/exportImage"
+                f"?bbox={bbox}"
+                "&bboxSR=4326"
+                "&size=100,100"
+                "&imageSR=3089"
+                "&format=png"
+                "&interpolation=RSP_BilinearInterpolation"
+                "&compressionQuality=50"
+                "&compression=LZ77"
+                f"&renderingRule={rendering_rule}"
+                "&f=image"
             )
 
             print(thumbnail_url)
 
             return thumbnail_url
 
-        elif category == "Imagery":
+        else:
 
-            return (
-                "https://kyraster.ky.gov/arcgis/rest/services/"
-                f"ImageServices/{image_service}_WGS84WM/ImageServer/exportImage"
-                f"?bbox={bbox}"
-                "&bboxSR=4326"
-                "&size=200,200"
-                "&format=png"
-                "&imageSR=4326"
-                "&colorFormula=sigmoidal rgb 5 0.2,gamma rgb 1.2,saturation 2"
-                "&f=image"
-            )
+            return(
+               f'{titiler_endpoint}/cog/preview?'
+                'format=png'
+                f'&url={url}'
+                '&bidx=1'
+                '&bidx=2'
+                '&bidx=3'
+                '&max_size=1024'
+                '&height=200'
+                '&width=200'
+                '&color_formula=sigmoidal rgb 5 0.2, gamma rgb 1.2, saturation 2'
+        )
+            # return (
+            #     f"{titiler_endpoint}cog/preview/100x100.jpg"
+            #     f"?url={url}"
+            #     "&max_size=100"
+            #     "&colorFormula=sigmoidal rgb 5 0.2,gamma rgb 1.2,saturation 2"
+            # )
 
     except Exception as e:
         print(f"Error getting bounds: {e}")
