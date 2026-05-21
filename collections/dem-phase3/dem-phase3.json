@@ -1,0 +1,65 @@
+{
+  "id": "dem-phase3",
+  "type": "Collection",
+  "links": [],
+  "title": "Digital Elevation Model Phase 3",
+  "assets": {
+    "thumbnail": {
+      "href": "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/collections/thumbnails/dem-phase3.jpg",
+      "type": "image/png",
+      "roles": [
+        "thumbnail"
+      ]
+    },
+    "metadata": {
+      "href": "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/Metadata/Ky_KYAPED_DEM_Phase3.xml",
+      "media-type": "text/xml",
+      "title": "Phase3 DEM Metadata",
+      "roles": [
+        "metadata"
+      ]
+    },
+    "tile-index": {
+      "href": "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/TileGrids/kyfromabove_phase3_dem_5k_grid.gpkg",
+      "title": "Kentucky 5000' DEM Tile Index (GPKG)",
+      "type": "application/geopackage+sqlite",
+      "roles": [
+        "index"
+      ]
+    }
+  },
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -89.704434,
+          36.456976,
+          -81.884235,
+          39.151921
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2022-12-12T00:00:00Z",
+          null
+        ]
+      ]
+    }
+  },
+  "license": "CC-BY-4.0",
+  "providers": [
+    {
+      "url": "https://registry.opendata.aws/kyfromabove/",
+      "name": "KyFromAbove",
+      "roles": [
+        "producer",
+        "processor",
+        "host"
+      ]
+    }
+  ],
+  "description": "Phase 3 (2023 - Present) Statewide LiDAR-derived Digital Elevation Model.\n\nThis collections contains Quality Level 2 or better data.  Currently, only portions of eastern, northern, and north-central Kentucky are available.  Current statewide acquisition is ongoing.",
+  "stac_version": "1.0.0"
+}

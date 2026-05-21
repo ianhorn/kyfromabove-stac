@@ -1,0 +1,65 @@
+{
+    "id": "laz-phase1",
+    "type": "Collection",
+    "links": [],
+    "title": "Phase 1 Point Cloud (LAZ)",
+    "assets": {
+        "thumbnail": {
+            "href": "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/collections/thumbnails/laz-phase1.jpg",
+            "type": "image/png",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "metadata": {
+            "href": "https://kyfromabove.s3-us-west-2.amazonaws.com/elevation/Metadata/KY_KYAPED_LAS_Phase1.xml",
+            "title": "Phase1 LiDAR Metadata",
+            "media_type": "text/html",
+            "roles": [
+                "metadata"
+            ]
+        },
+        "tile-index": {
+            "href": "https://kyfromabove.s3-us-west-2.amazonaws.com/elevation/PointCloud/TileGrids/kyfromabove_phase1_pointcloud_5k_grid.gpkg",
+            "title": "Kentucky Tile Index (GPKG)",
+            "type": "application/geopackage+sqlite",
+            "roles": [
+                "index"
+            ]
+        }
+    },
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -89.704434,
+                    36.456976,
+                    -81.884235,
+                    39.151921
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2010-03-18T00:00:00Z",
+                    "2017-04-02T12:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "CC-BY-4.0",
+    "providers": [
+        {
+            "url": "https://registry.opendata.aws/kyfromabove/",
+            "name": "KyFromAbove Phase1 LiDAR Point Cloud",
+            "roles": [
+                "producer",
+                "processor",
+                "host"
+            ]
+        }
+    ],
+    "description": " Phase 1 Statewide LiDAR data was collected from 2010 - 2017 and is a mix of USGS Quality Level 2 and 3. Data was collected while no snow was on the ground and rivers were at or below normal levels. All mapping products were delivered in Kentucky Single Zone State Plane coordinates (parameters defined in FIPS 1600, and units of U.S. Survey Feet), NAD83* geometric datum (NSRS2007 or CORS96 adjustment), and NAVD88 vertical datum. GPS derived NAVD88 heights will use the Geoid09* model. \n\n[* Use most current adjustment and geoid model available from the National Geodetic Survey at time of data processing]",
+    "stac_version": "1.1.0"
+}

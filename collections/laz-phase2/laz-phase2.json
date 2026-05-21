@@ -1,0 +1,65 @@
+{
+    "id": "laz-phase2",
+    "type": "Collection",
+    "links": [],
+    "title": "Phase 2 Point Cloud (COPC)",
+    "assets": {
+        "thumbnail": {
+            "href": "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/collections/thumbnails/laz-phase2.jpg",
+            "type": "image/png",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "metadata": {
+            "href": "https://kyfromabove.s3-us-west-2.amazonaws.com/elevation/Metadata/KY_KYAPED_LAS_Phase2.xml",
+            "title": "Phase2 LiDAR Metadata",
+            "media_type": "text/html",
+            "roles": [
+                "metadata"
+            ]
+        },
+        "tile-index": {
+            "href": "https://kyfromabove.s3-us-west-2.amazonaws.com/elevation/PointCloud/TileGrids/kyfromabove_phase2_pointcloud_5k_grid.gpkg",
+            "title": "Kentucky Tile Index (GPKG)",
+            "type": "application/geopackage+sqlite",
+            "roles": [
+                "index"
+            ]
+        }
+    },
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -89.704434,
+                    36.456976,
+                    -81.884235,
+                    39.151921
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2019-02-19T00:00:00Z",
+                    "2024-02-05T12:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "CC-BY-4.0",
+    "providers": [
+        {
+            "url": "https://registry.opendata.aws/kyfromabove/",
+            "name": "KyFromAbove Phase2 LiDAR Point Cloud",
+            "roles": [
+                "producer",
+                "processor",
+                "host"
+            ]
+        }
+    ],
+    "description": "Phase 2 Statewide LiDAR data was collected from 2019 - 2024 at USGS Quality Level 2. The Kentucky Statewide 2019 LiDAR project called for the planning, acquisition, processing, and derivative products of lidar data to be collected at a nominal pulse spacing (NPS) of 0.71 meters. Project specifications are based on the U.S. Geological Survey National Geospatial Program Base LiDAR Specification, Version 1.3. The data were developed based on a horizontal projection/datum of NAD 1983 2011 StatePlane Kentucky FIPS 1600 Ft US, Foot US and vertical datum of NAVD88 GEOID12B, Foot US. LiDAR data were delivered as processed Classified LAS 1.4 files formatted individual 5000' x 5000' tiles, as tiled intensity imagery, and as tiled bare earth DEMs; all tiled to the same 5000' x 5000' schema.",
+    "stac_version": "1.1.0"
+}

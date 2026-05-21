@@ -1,0 +1,65 @@
+{
+  "id": "dem-phase2",
+  "type": "Collection",
+  "links": [],
+  "title": "Digital Elevation Model Phase 2",
+  "assets": {
+    "thumbnail": {
+      "href": "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/collections/thumbnails/dem-phase2.jpg",
+      "type": "image/png",
+      "roles": [
+        "thumbnail"
+      ]
+    },
+    "metadata": {
+      "href": "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/Metadata/Ky_KYAPED_DEM_Phase2.xml",
+      "media-type": "text/xml",
+      "title": "Phase2 DEM Metadata",
+      "roles": [
+        "metadata"
+      ]
+    },
+    "tile-index": {
+      "href": "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/TileGrids/kyfromabove_phase2_5k_dem_grid.gpkg",
+      "title": "Kentucky 5000' DEM Tile Index (GPKG)",
+      "type": "application/geopackage+sqlite",
+      "roles": [
+        "index"
+      ]
+    }
+  },
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -89.704434,
+          36.456976,
+          -81.884235,
+          39.151921
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2019-02-19T00:00:00Z",
+          "2024-02-05T12:00:00Z"
+        ]
+      ]
+    }
+  },
+  "license": "CC-BY-4.0",
+  "providers": [
+    {
+      "url": "https://registry.opendata.aws/kyfromabove/",
+      "name": "KyFromAbove Phase2 DEM Collection",
+      "roles": [
+        "producer",
+        "processor",
+        "host"
+      ]
+    }
+  ],
+  "description": "Phase 2 (2019 - 2024) Statewide LiDAR-derived Digital Elevation Model.\n\nThis is the KyFromAbove Phase2 collection and provides access to a 2 Foot Digital Elevation Model (DEM) for Kentucky. LiDAR was collected at Quality Level 2 or better from 2019 - 2024 for Kentucky Aerial Photography and Elevation Data (KYAPED) project areas while no snow was on the ground and rivers were at or below normal levels.",
+  "stac_version": "1.0.0"
+}

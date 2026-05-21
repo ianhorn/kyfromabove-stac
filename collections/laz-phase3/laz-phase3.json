@@ -1,0 +1,65 @@
+{
+    "id": "laz-phase3",
+    "type": "Collection",
+    "links": [],
+    "title": "Phase 3 Point Cloud (COPC)",
+    "assets": {
+        "thumbnail": {
+            "href": "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/collections/thumbnails/laz-phase3.jpg",
+            "type": "image/png",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "metadata": {
+            "href": "https://kyfromabove.s3-us-west-2.amazonaws.com/elevation/Metadata/KY_KYAPED_LAS_Phase3.xml",
+            "title": "Phase3 LiDAR Metadata",
+            "media_type": "text/html",
+            "roles": [
+                "metadata"
+            ]
+        },
+        "tile-index": {
+            "href": "https://kyfromabove.s3-us-west-2.amazonaws.com/elevation/PointCloud/TileGrids/kyfromabove_phase3_pointcloud_5k_grid.gpkg",
+            "title": "Kentucky 5000' Phase3 PointcloudTile Index (GPKG)",
+            "type": "application/geopackage+sqlite",
+            "roles": [
+                "index"
+            ]
+        }
+    },
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -89.704434,
+                    36.456976,
+                    -81.884235,
+                    39.151921
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2022-12-12T00:00:00Z",
+                    null
+                ]
+            ]
+        }
+    },
+    "license": "CC-BY-4.0",
+    "providers": [
+        {
+            "url": "https://registry.opendata.aws/kyfromabove/",
+            "name": "KyFromAbove Phase3 LiDAR Point Cloud",
+            "roles": [
+                "producer",
+                "processor",
+                "host"
+            ]
+        }
+    ],
+    "description": "Phase 3 Statewide LiDAR data collection started in 2022 and is ongoing.  Currently, only portions of eastern Kentucky, Northern Kentucky, and north central Kentucky are available.",
+    "stac_version": "1.1.0"
+}
