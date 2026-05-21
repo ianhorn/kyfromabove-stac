@@ -7,8 +7,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import requests
 
-product = "dem-phase1"
-image_service = "Ky_DEM_KYAPED_5FT"
+product = "orthos-phase3"
+image_service = ""
 
 if "DEM" in image_service:
     category = 'Elevation'
@@ -21,7 +21,7 @@ titiler_endpoint = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/"
 csv = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/{product}.csv"
 
 output_dir = (
-    f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/thumbnails/{product}"
+    f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/thumbnails/{product}"
 )
 
 os.makedirs(output_dir, exist_ok=True)
@@ -74,7 +74,7 @@ def get_thumbnail_url(url):
                 f"{image_service}/ImageServer/exportImage"
                 f"?bbox={bbox}"
                 "&bboxSR=4326"
-                "&size=100,100"
+                "&size=250,250"
                 "&imageSR=3089"
                 "&format=png"
                 "&interpolation=RSP_BilinearInterpolation"
@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
     print(f"Found {len(urls)} URLs")
 
-    with ThreadPoolExecutor(max_workers=20) as executor:
+    with ThreadPoolExecutor(max_workers=48) as executor:
 
         futures = [
             executor.submit(create_thumbnail, url)
