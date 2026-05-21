@@ -7,9 +7,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import requests
 
-product = "dem-phase3"
-image_service = "Ky_DEM_KYAPED_2FT_Phase3"
-category = "Elevation"
+product = "orthos-phase1"
+image_service = "Ky_KYAPED_Imagery"
+category = "Imagery"
 
 titiler_endpoint = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/bounds"
 
@@ -76,17 +76,17 @@ def get_thumbnail_url(url):
 
             return thumbnail_url
 
-        elif category == "Image":
+        elif category == "Imagery":
 
             return (
                 "https://kyraster.ky.gov/arcgis/rest/services/"
-                f"ImageServices/{image_service}_WGS84WM/"
-                "ImageServer/exportImage"
+                f"ImageServices/{image_service}_WGS84WM/ImageServer/exportImage"
                 f"?bbox={bbox}"
                 "&bboxSR=4326"
                 "&size=200,200"
                 "&format=png"
-                "&interpolation=RSP_BilinearInterpolation"
+                "&imageSR=4326"
+                "&colorFormula=sigmoidal rgb 5 0.2,gamma rgb 1.2,saturation 2"
                 "&f=image"
             )
 
