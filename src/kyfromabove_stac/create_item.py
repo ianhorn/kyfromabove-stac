@@ -3,10 +3,10 @@ import json
 import pystac
 from constants_titiler import assign_datetime, assign_collection
 
-cogbounds_request_url = "http://localhost:8000/cog/bounds?url="
-stac_request_url = "http://localhost:8000/cog/stac"
-collection_id = "orthos-phase1"
-stac_api_url = f"https://6xpdwhema7.execute-api.us-west-2.amazonaws.com/stac/collections/{collection_id}/items"
+cogbounds_request_url = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/bounds?url="
+stac_request_url = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac"
+collection_id = "dem-phase2"
+stac_api_url = f"http://ec2-184-33-2-59.us-west-2.compute.amazonaws.com/collections/{collection_id}/items"
 
 def create_thumbnail(url):
     try:
@@ -117,5 +117,5 @@ def main(url):
     create_stac_item(url)
 
 if __name__ == "__main__":
-    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/imagery/orthos/Phase1/KY_KYAPED_2014_6IN/N135E128_2014_6IN_cog.tif"
+    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase2/N150E139_2020_DEM_Phase2_cog.tif"
     main(url)
