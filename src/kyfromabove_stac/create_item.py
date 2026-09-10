@@ -17,7 +17,7 @@ def create_thumbnail(url):
             bbox = ",".join(map(str, bounds))
             crs = data.get("crs", "")
             thumbnail_url = (
-                f"https://kyraster.ky.gov/arcgis/rest/services/ImageServices/Ky_KYAPED_Phase2_6IN_WGS84WM/ImageServer/"
+                f"https://kyraster.ky.gov/arcgis/rest/services/ElevationServices/Ky_DEM_KYAPED_2FT_Phase2/ImageServer/"
                 f"exportImage?bbox={bbox}&bboxSR=4326&imageSR=3857&format=png&size=431,350&f=image"
             )
 
@@ -117,5 +117,5 @@ def main(url):
     create_stac_item(url)
 
 if __name__ == "__main__":
-    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase2/N150E139_2020_DEM_Phase2_cog.tif"
+    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase2/N173E141_2020_DEM_Phase2_cog.tif"
     main(url)
