@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 import pystac
 from constants_titiler import assign_datetime, assign_collection
 
@@ -76,25 +77,25 @@ def create_stac_item(url):
                 print("❌ STAC validation failed:", e)
                 return None
 
-            # ✅ Post to STAC API
-            try:
-                post_response = requests.post(
-                    stac_api_url,
-                    headers={"Content-Type": "application/json"},
-                    data=json.dumps(item)
-                )
-                if post_response.ok:
-                    print("✅ STAC item posted successfully.")
-                else:
-                    print("❌ Failed to post STAC item.")
-                    print("Status code:", post_response.status_code)
-                    print("Response:", post_response.text)
-            except Exception as e:
-                print("❌ Error posting to STAC API:", e)
+            # # ✅ Post to STAC API
+            # try:
+            #     post_response = requests.post(
+            #         stac_api_url,
+            #         headers={"Content-Type": "application/json"},
+            #         data=json.dumps(item)
+            #     )
+            #     if post_response.ok:
+            #         print("✅ STAC item posted successfully.")
+            #     else:
+            #         print("❌ Failed to post STAC item.")
+            #         print("Status code:", post_response.status_code)
+            #         print("Response:", post_response.text)
+            # except Exception as e:
+            #     print("❌ Error posting to STAC API:", e)
 
             # ✅ Write to disk
             try:
-                output_path = "stac_item.json"
+                output_path = os.path.basename(url) + ".json"
                 with open(output_path, "w") as f:
                     json.dump(item, f, indent=2)
                 print(f"✅  item written to {output_path}")
@@ -117,5 +118,5 @@ def main(url):
     create_stac_item(url)
 
 if __name__ == "__main__":
-    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase2/N173E141_2020_DEM_Phase2_cog.tif"
+    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase2/N119E132_2020_DEM_Phase2_cog.tif"
     main(url)
