@@ -7,3 +7,10 @@ docker run -dit --name pointcloud \
   -w /workspace \
   ianhorn/stactools-pointcloud:v1.0.0 \
   sleep infinity
+
+
+
+rio stac https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/N059E296_2020_DEM_Phase2_cog.tif \
+--without-eo \
+-c dem-phase2 \
+-o N059E296_2020_DEM_Phase2_cog.tif.json

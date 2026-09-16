@@ -118,5 +118,5 @@ def main(url):
     create_stac_item(url)
 
 if __name__ == "__main__":
-    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/Phase2/N119E132_2020_DEM_Phase2_cog.tif"
+    url = "https://kyfromabove.s3.us-west-2.amazonaws.com/elevation/DEM/N059E296_2020_DEM_Phase2_cog.tif"
     main(url)
