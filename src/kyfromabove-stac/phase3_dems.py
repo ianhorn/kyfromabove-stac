@@ -1,116 +1,233 @@
-"""
-CSV-to-STAC pipeline using Titiler for geometry and bbox.
-End result matches your cURL example format.
-Adds thumbnail and minimal links, no local raster needed.
-"""
-
 import json
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
+
 import pandas as pd
 import requests
-from threading import Lock
-# from constants_titiler import assign_collection
 
-# --- Configuration ---
-CSV_FILE = Path("C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/csv/dem-phase3.csv")
-OUTPUT_DIR = Path("C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/dem-phase3")
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+CSV_FILE = Path(r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\csv\dem-phase3.csv")
+OUTPUT_DIR = Path(r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items\dem-phase3")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-TITILER_ENDPOINT = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac"
-THUMBNAIL_BASE = "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/dem-phase3"
+TITILER_ENDPOINT = ("https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac")
+THUMBNAIL_BASE = (
+    "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/"
+    "collections/dem-phase3/thumbnails"
+)
 HARDCODED_DATETIME = "2026-02-13T00:00:00Z"
 HARDCODED_END_DATETIME = "2026-03-12T00:00:00Z"
 
-# Thread-safe print
-print_lock = Lock()
-def safe_print(*args, **kwargs):
-    with print_lock:
-        print(*args, **kwargs)
+MAX_WORKERS = 28
 
-# --- Load CSV ---
-data = pd.read_csv(CSV_FILE)
-safe_print(f"Loaded {len(data)} rows from {CSV_FILE}")
 
-# --- Create STAC item for a single URL ---
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def worldfile_url(raster_url: str) -> str:
+    """Return the .tfw URL corresponding to a .tif URL."""
+    return f"{raster_url.rsplit('.', 1)[0]}.tfw"
+
+
 def create_stac_item(url: str):
-    try:
-        item_id = Path(url).name
-        # collection = assign_collection(url) or "dem-phase3"
+    """Create a STAC item using TiTiler's STAC response as the source."""
 
-        # --- Call Titiler to get geometry and bbox ---
-        params = {"url": url, "with_eo": "false", "asset_roles": "data"}
-        response = requests.get(TITILER_ENDPOINT, params=params, timeout=60)
+    try:
+        # -------------------------------------------------------------------
+        # Get STAC metadata from TiTiler
+        # -------------------------------------------------------------------
+
+        response = requests.get(
+            TITILER_ENDPOINT,
+            params={
+                "url": url,
+                "with_eo": "false",
+                "asset_roles": "data",
+            },
+            timeout=60,
+        )
+
         response.raise_for_status()
+
         tiler_item = response.json()
 
-        # Extract geometry and bbox
-        geometry = tiler_item.get("geometry")
-        bbox = tiler_item.get("bbox")
+        # -------------------------------------------------------------------
+        # Use the filename without .tif as the STAC item ID
+        # -------------------------------------------------------------------
 
-        # --- Construct STAC item ---
-        item = {
-            "type": "Feature",
-            "stac_version": "1.0.0",
-            "stac_extensions": [
-                "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
-                "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
-            ],
-            "id": item_id,
-            "geometry": geometry,
-            "bbox": bbox,
-            "properties": {
-                "license": "CC-BY-4.0",
-                "proj:epsg": tiler_item["properties"].get("proj:epsg", 3089),
-                "proj:geometry": tiler_item["properties"].get("proj:geometry"),
-                "proj:bbox": tiler_item["properties"].get("proj:bbox"),
-                "proj:shape": tiler_item["properties"].get("proj:shape"),
-                "proj:transform": tiler_item["properties"].get("proj:transform"),
-                "start_datetime": HARDCODED_DATETIME,
-                "end_datetime": HARDCODED_END_DATETIME,
-                "datetime": HARDCODED_DATETIME
-            },
-            "links": [
-                # {"rel": "collection", "href": collection, "type": "application/json"}
-            ],
-            "assets": {
-                "asset": {
-                    "href": url,
-                    "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-                    "raster:bands": tiler_item.get("assets", {}).get("asset", {}).get("raster:bands", []),
-                    "roles": ["data", "visual"]
-                },
-                "thumbnail": {
-                    "href": f"{THUMBNAIL_BASE}/{Path(url).stem}.png",
-                    "type": "image/png",
-                    "roles": ["thumbnail"],
-                    "title": "Thumbnail image"
-                }
-            }
-            # "collection": collection
+        filename = url.rsplit("/", 1)[-1]
+        item_id = filename.rsplit(".", 1)[0]
+
+        # -------------------------------------------------------------------
+        # Preserve TiTiler's properties exactly.
+        #
+        # This is important because TiTiler provides:
+        #
+        #   proj:projjson
+        #   proj:shape
+        #   proj:transform
+        #   proj:bbox
+        #   proj:geometry
+        #
+        # including the compound CRS:
+        #
+        # NAD83 / Kentucky Single Zone (ftUS)
+        # + NAVD88 height (ftUS)
+        # -------------------------------------------------------------------
+
+        properties = tiler_item.get("properties", {}).copy()
+
+        # Add/update the dates used by the KyFromAbove collection.
+        properties["start_datetime"] = HARDCODED_DATETIME
+        properties["end_datetime"] = HARDCODED_END_DATETIME
+        properties["datetime"] = HARDCODED_DATETIME
+
+        # Add the collection license.
+        properties["license"] = "CC-BY-4.0"
+
+        # -------------------------------------------------------------------
+        # Get the data asset returned by TiTiler.
+        #
+        # This contains raster:bands, including:
+        #   data_type
+        #   nodata
+        #   unit
+        #   statistics
+        #   histogram
+        # -------------------------------------------------------------------
+
+        tiler_data_asset = tiler_item.get("assets", {}).get("data", {})
+
+        data_asset = tiler_data_asset.copy()
+
+        # Keep the actual COG URL and identify it as data/visual.
+        data_asset["href"] = url
+        data_asset["type"] = (
+            "image/tiff; application=geotiff; profile=cloud-optimized"
+        )
+        data_asset["roles"] = ["data", "visual"]
+
+        # -------------------------------------------------------------------
+        # Thumbnail
+        # -------------------------------------------------------------------
+
+        thumbnail_url = (
+            f"{THUMBNAIL_BASE}/{Path(filename).stem}.png"
+        )
+
+        thumbnail_asset = {
+            "href": thumbnail_url,
+            "type": "image/png",
+            "roles": ["thumbnail"],
+            "title": "Thumbnail image",
         }
 
-        # --- Save locally ---
-        file_path = OUTPUT_DIR / f"{Path(url).stem}.json"
-        with open(file_path, "w", encoding="utf-8") as f:
+        # -------------------------------------------------------------------
+        # World file
+        # -------------------------------------------------------------------
+
+        worldfile_asset = {
+            "href": worldfile_url(url),
+            "type": "text/plain",
+            "roles": ["metadata", "worldfile"],
+            "title": "World file",
+        }
+
+        # -------------------------------------------------------------------
+        # Build final STAC item.
+        #
+        # Projection and raster metadata come directly from TiTiler.
+        # -------------------------------------------------------------------
+
+        item = {
+            "type": tiler_item.get("type", "Feature"),
+            "stac_version": tiler_item.get("stac_version", "1.1.0"),
+            "stac_extensions": tiler_item.get("stac_extensions", []),
+            "id": item_id,
+            "geometry": tiler_item["geometry"],
+            "bbox": tiler_item["bbox"],
+            "properties": properties,
+            "links": [],
+            "assets": {
+                "data": data_asset,
+                "thumbnail": thumbnail_asset,
+                "worldfile": worldfile_asset,
+            },
+        }
+
+        # -------------------------------------------------------------------
+        # Write item
+        # -------------------------------------------------------------------
+
+        output_file = OUTPUT_DIR / f"{item_id}.json"
+
+        with output_file.open("w", encoding="utf-8") as f:
             json.dump(item, f, indent=2)
 
-        safe_print(f"✅ STAC item created and saved for: {url}")
-        return item
+        return output_file, None
 
     except Exception as e:
-        safe_print(f"❌ Failed processing {url}: {e}")
-        return None
+        return None, f"{url}: {e}"
 
-# --- Main execution ---
-def main(max_workers: int = 24):
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(create_stac_item, row["aws_url"]): idx for idx, row in data.iterrows()}
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                safe_print(f"❌ Exception in worker {futures[future]}: {e}")
 
-if __name__ == "__main__":
-    main()
+# ---------------------------------------------------------------------------
+# Read CSV
+# ---------------------------------------------------------------------------
+
+df = pd.read_csv(CSV_FILE)
+
+# Assumes the CSV contains a column named "url".
+urls = df["url"].dropna().astype(str).tolist()
+
+print(f"Found {len(urls):,} DEM URLs")
+print(f"Output directory: {OUTPUT_DIR}")
+print(f"Using {MAX_WORKERS} workers")
+print()
+
+
+# ---------------------------------------------------------------------------
+# Process concurrently
+# ---------------------------------------------------------------------------
+
+completed = 0
+failed = 0
+
+lock = Lock()
+
+with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+
+    futures = {
+        executor.submit(create_stac_item, url): url
+        for url in urls
+    }
+
+    for future in as_completed(futures):
+
+        output_file, error = future.result()
+
+        with lock:
+            if error:
+                failed += 1
+                print(f"ERROR: {error}")
+            else:
+                completed += 1
+                print(
+                    f"[{completed + failed:,}/{len(urls):,}] "
+                    f"Wrote {output_file.name}"
+                )
+
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+
+print()
+print("Complete")
+print(f"  Successful: {completed:,}")
+print(f"  Failed:     {failed:,}")
+print(f"  Total:      {len(urls):,}")
