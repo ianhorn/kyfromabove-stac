@@ -2,7 +2,7 @@ import json
 import requests
 
 def put_item(file, phase):
-    api_url_base = f"https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
+    api_url_base = f"http::/ec2-52-88-114-187.us-west-2.compute.amazonaws.com/collections/"
 
     # Load STAC Item from file
     with open(file, "r", encoding="utf-8") as f:

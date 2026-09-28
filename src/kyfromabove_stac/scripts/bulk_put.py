@@ -5,7 +5,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 def put_item(args):
     file, phase, = args
-    api_url_base = "https://spved5ihrl.execute-api.us-west-2.amazonaws.com/collections/"
+    api_url_base = "http://ec2-52-88-114-187.us-west-2.compute.amazonaws.com/collections/{phase}/items"
 
     try:
         item_list = []
@@ -37,8 +37,8 @@ def put_item(args):
 
 
 if __name__ == "__main__":
-    phase = "laz-phase3"  # Change this
-    folder = f"C:/Users/Ian.Horn/Documents/stac-repos/pointcloud/items/{phase}/"  # Maybe change this
+    phase = "dem-phase3"  # Change this
+    folder = f"C:/Users/Ian.Horn/Documents/stac-repos/kyfromabove-stac/items/{phase}/"  # Maybe change this
 
     files = [
         os.path.join(folder, f)
