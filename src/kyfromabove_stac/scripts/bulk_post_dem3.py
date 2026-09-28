@@ -4,15 +4,24 @@ from pathlib import Path
 import aiohttp
 
 
-PHASE = "orthos-phase2"
-FOLDER = Path(r"C:/Users/Ian.Horn/Documents/stac-repos/items/PHASE}")
+PHASE = "dem-phase3"
 
-API_URL_BASE = "https://drwgni8q1h.execute-api.us-west-2.amazonaws.com/collections/"
+FOLDER = Path(
+
+    r"C:\Users\Ian.Horn\Documents\stac-repos\kyfromabove-stac\items"
+
+) / PHASE
+
+print(f"FOLDER = {FOLDER}")
+print(f"Exists = {FOLDER.exists()}")
+
+print(f"Is directory = {FOLDER.is_dir()}")
+API_URL_BASE = "http://ec2-184-33-2-59.us-west-2.compute.amazonaws.com/collections/"
 
 POST_URL = f"{API_URL_BASE}{PHASE}/items"
 
 # Limit concurrency (tune this: 10–50 is usually safe)
-SEM = asyncio.Semaphore(28)
+SEM = asyncio.Semaphore(14)
 
 
 async def post_item(session, file_path):
