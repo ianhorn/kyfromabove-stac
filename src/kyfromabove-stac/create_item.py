@@ -3,8 +3,8 @@ import json
 import pystac
 from constants import assign_datetime, assign_collection
 
-cogbounds_request_url = "http://localhost:8000/cog/bounds?url="
-stac_request_url = "http://localhost:8000/cog/stac"
+cogbounds_request_url = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/bounds?url="
+stac_request_url = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac"
 collection_id = "orthos-phase1"
 stac_api_url = f"https://6xpdwhema7.execute-api.us-west-2.amazonaws.com/stac/collections/{collection_id}/items"
 

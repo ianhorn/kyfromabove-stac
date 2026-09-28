@@ -19,8 +19,8 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 TITILER_ENDPOINT = "https://6hp4guqpwe.execute-api.us-west-2.amazonaws.com/cog/stac"
 THUMBNAIL_BASE = "https://kyfromabove-stac.s3.us-west-2.amazonaws.com/items/thumbnails/dem-phase3"
-HARDCODED_DATETIME = "2025-03-03T00:00:00Z"
-HARDCODED_END_DATETIME = "2025-03-08T00:00:00Z"
+HARDCODED_DATETIME = "2026-02-13T00:00:00Z"
+HARDCODED_END_DATETIME = "2026-03-12T00:00:00Z"
 
 # Thread-safe print
 print_lock = Lock()
